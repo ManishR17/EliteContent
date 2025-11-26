@@ -1,0 +1,81 @@
+<div class="document-container">
+    <div class="header">
+        <h1>Document <span class="gradient-text">Generator</span></h1>
+        <p>Create professional business documents with AI assistance</p>
+    </div>
+
+    <div class="content-grid">
+        <div class="input-panel">
+            <div class="form-group">
+                <label>Document Type</label>
+                <select [(ngModel)]="documentType">
+                    <option *ngFor="let type of documentTypes" [value]="type.value">{{ type.label }}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Topic</label>
+                <input type="text" [(ngModel)]="topic" placeholder="e.g., Q4 Marketing Strategy">
+            </div>
+
+            <div class="form-group">
+                <label>Key Points (one per line)</label>
+                <textarea [(ngModel)]="keyPoints" rows="6"
+                    placeholder="- Focus on social media growth&#10;- Increase budget by 15%&#10;- Launch new influencer campaign"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tone</label>
+                    <select [(ngModel)]="tone">
+                        <option *ngFor="let t of tones" [value]="t.value">{{ t.label }}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Length</label>
+                    <select [(ngModel)]="length">
+                        <option *ngFor="let l of lengths" [value]="l.value">{{ l.label }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <button (click)="generateDocument()" [disabled]="!topic || !keyPoints || isLoading" class="generate-btn">
+                {{ isLoading ? 'Generating...' : 'Generate Document' }}
+            </button>
+
+            <div *ngIf="error" class="error">{{ error }}</div>
+        </div>
+
+        <div class="results-panel">
+            <div *ngIf="!result" class="empty-state">
+                <div class="empty-icon">📝</div>
+                <h3>Your Generated Document</h3>
+                <p class="empty-message">Fill in the details and click Generate to create your professional document. It
+                    will appear here.</p>
+            </div>
+
+            <div *ngIf="result">
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <span class="value">{{ result.word_count }}</span>
+                        <span class="label">Words</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="value">{{ result.sections.length }}</span>
+                        <span class="label">Sections</span>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h3>Document Preview</h3>
+                    <div class="document-content">
+                        <div *ngFor="let section of result.sections" class="section">
+                            <h4>{{ section.title }}</h4>
+                            <p>{{ section.content }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

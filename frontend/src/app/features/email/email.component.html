@@ -1,0 +1,91 @@
+<div class="email-container">
+    <div class="header">
+        <h1>Email <span class="gradient-text">Writer</span></h1>
+        <p>Generate professional emails for any occasion with AI assistance</p>
+    </div>
+
+    <div class="content-grid">
+        <div class="input-panel">
+            <div class="form-group">
+                <label>Email Type</label>
+                <select [(ngModel)]="emailType">
+                    <option *ngFor="let type of emailTypes" [value]="type.value">{{ type.label }}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Recipient (Optional)</label>
+                <input type="text" [(ngModel)]="recipient" placeholder="e.g., John Smith, Hiring Manager">
+            </div>
+
+            <div class="form-group">
+                <label>Subject Line</label>
+                <input type="text" [(ngModel)]="subject" placeholder="Enter email subject...">
+            </div>
+
+            <div class="form-group">
+                <label>Key Points (one per line)</label>
+                <textarea [(ngModel)]="keyPoints" rows="6"
+                    placeholder="- Request meeting next week&#10;- Discuss project timeline&#10;- Share budget proposal"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tone</label>
+                    <select [(ngModel)]="tone">
+                        <option *ngFor="let t of tones" [value]="t.value">{{ t.label }}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Length</label>
+                    <select [(ngModel)]="length">
+                        <option *ngFor="let l of lengths" [value]="l.value">{{ l.label }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <button (click)="generateEmail()" [disabled]="!subject || !keyPoints || isLoading" class="generate-btn">
+                {{ isLoading ? 'Generating...' : 'Generate Email' }}
+            </button>
+
+            <div *ngIf="error" class="error">{{ error }}</div>
+        </div>
+
+        <div class="results-panel">
+            <div *ngIf="!result" class="empty-state">
+                <div class="empty-icon">📧</div>
+                <h3>Your Generated Email</h3>
+                <p class="empty-message">Enter your email details and key points to generate a professional email. It
+                    will appear here.</p>
+            </div>
+
+            <div *ngIf="result">
+                <div class="info-card">
+                    <div class="info-item">
+                        <span class="label">Word Count:</span>
+                        <span class="value">{{ result.word_count || 'N/A' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Readability:</span>
+                        <span class="value">{{ result.readability_score }}/100</span>
+                    </div>
+                </div>
+
+                <div class="subject-preview" *ngIf="result.subject_line">
+                    <h3>📧 Subject Line</h3>
+                    <div class="subject-box">{{ result.subject_line }}</div>
+                </div>
+
+                <div class="email-content">
+                    <h3>✉️ Generated Email</h3>
+                    <div class="email-preview">{{ result.email }}</div>
+
+                    <div class="action-buttons">
+                        <button (click)="copyToClipboard()" class="copy-btn">📋 Copy to Clipboard</button>
+                        <button (click)="reset()" class="reset-btn">Create New Email</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

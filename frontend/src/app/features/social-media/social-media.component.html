@@ -1,0 +1,130 @@
+<div class="social-container">
+    <div class="header">
+        <h1>Social Media <span class="gradient-text">Content</span></h1>
+        <p>Create engaging posts for LinkedIn, Twitter, Instagram, Facebook, and TikTok</p>
+    </div>
+
+    <div class="content-grid">
+        <div class="input-panel">
+            <div class="form-group">
+                <label>Platform</label>
+                <div class="platform-grid">
+                    <div *ngFor="let p of platforms" class="platform-card" [class.active]="platform === p.value"
+                        (click)="platform = p.value">
+                        <span class="platform-icon">{{ p.icon }}</span>
+                        <span class="platform-name">{{ p.label }}</span>
+                    </div>
+                </div>
+                <p *ngIf="selectedPlatform" class="hint">Max length: {{ selectedPlatform.maxLength }} characters</p>
+            </div>
+
+            <div class="form-group">
+                <label>Content Type</label>
+                <select [(ngModel)]="contentType">
+                    <option *ngFor="let type of contentTypes" [value]="type.value">{{ type.label }}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Topic</label>
+                <input type="text" [(ngModel)]="topic" placeholder="What's your post about?">
+            </div>
+
+            <div class="form-group">
+                <label>Key Points (Optional)</label>
+                <textarea [(ngModel)]="keyPoints" rows="4"
+                    placeholder="Add specific points to include (one per line)..."></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tone</label>
+                    <select [(ngModel)]="tone">
+                        <option *ngFor="let t of tones" [value]="t.value">{{ t.label }}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Length</label>
+                    <select [(ngModel)]="targetLength">
+                        <option *ngFor="let opt of lengthOptions" [value]="opt.value">{{ opt.label }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Options</label>
+                <div class="options-grid">
+                    <label class="checkbox-label">
+                        <input type="checkbox" [(ngModel)]="includeHashtags"> Include Hashtags
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" [(ngModel)]="includeEmojis"> Include Emojis
+                    </label>
+                </div>
+            </div>
+
+            <button (click)="generateContent()" [disabled]="!topic || isLoading" class="generate-btn">
+                {{ isLoading ? 'Generating...' : 'Generate Post' }}
+            </button>
+
+            <div *ngIf="error" class="error">{{ error }}</div>
+        </div>
+
+        <div class="results-panel">
+            <div *ngIf="!result" class="empty-state">
+                <div class="empty-icon">📱</div>
+                <h3>Your Social Media Post</h3>
+                <p class="empty-message">Select a platform and enter your topic to generate engaging social media
+                    content. It will appear here.</p>
+            </div>
+
+            <div *ngIf="result">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="icon">📝</span>
+                        <div class="stat-info">
+                            <span class="value">{{ result.character_count || 0 }}</span>
+                            <span class="label">Characters</span>
+                        </div>
+                    </div>
+                    <div class="stat-card" *ngIf="result.hashtags?.length">
+                        <span class="icon">#️⃣</span>
+                        <div class="stat-info">
+                            <span class="value">{{ result.hashtags.length }}</span>
+                            <span class="label">Hashtags</span>
+                        </div>
+                    </div>
+                    <div class="stat-card" *ngIf="result.engagement_score">
+                        <span class="icon">📊</span>
+                        <div class="stat-info">
+                            <span class="value">{{ result.engagement_score }}</span>
+                            <span class="label">Engagement</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="post-preview">
+                    <div class="preview-header">
+                        <span class="preview-platform">{{ selectedPlatform?.icon }} {{ selectedPlatform?.label }}
+                            Post</span>
+                    </div>
+                    <div class="post-content">
+                        {{ result.content }}
+                    </div>
+                </div>
+
+                <div class="hashtags-section" *ngIf="result.hashtags?.length">
+                    <h3>#️⃣ Suggested Hashtags</h3>
+                    <div class="hashtags-list">
+                        <span *ngFor="let tag of result.hashtags" class="hashtag-tag">{{ tag }}</span>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button (click)="copyToClipboard()" class="copy-btn">📋 Copy Post</button>
+                    <button (click)="reset()" class="reset-btn">Create New Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

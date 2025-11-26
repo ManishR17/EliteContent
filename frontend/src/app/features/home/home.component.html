@@ -1,0 +1,15 @@
+<div class="home-container">
+    <header class="hero">
+        <h1>EliteContent <span class="gradient-text">AI</span></h1>
+        <p class="subtitle">Professional content generation powered by advanced AI</p>
+    </header>
+
+    <div class="features-grid">
+        <div *ngFor="let type of contentTypes" class="feature-card" [routerLink]="type.route">
+            <div class="icon">{{ type.icon }}</div>
+            <h2>{{ type.title }}</h2>
+            <p>{{ type.description }}</p>
+            <div class="arrow">→</div>
+        </div>
+    </div>
+</div>

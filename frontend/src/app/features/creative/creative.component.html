@@ -1,0 +1,106 @@
+<div class="creative-container">
+    <div class="header">
+        <h1>Creative <span class="gradient-text">Writing</span></h1>
+        <p>Unleash your imagination with AI-assisted storytelling</p>
+    </div>
+
+    <div class="content-grid">
+        <div class="input-panel">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Content Type</label>
+                    <select [(ngModel)]="contentType">
+                        <option *ngFor="let type of contentTypes" [value]="type.value">{{ type.label }}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Genre</label>
+                    <select [(ngModel)]="genre">
+                        <option *ngFor="let g of genres" [value]="g.value">{{ g.label }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Plot Points / Ideas (one per line)</label>
+                <textarea [(ngModel)]="plotPoints" rows="6"
+                    placeholder="- A detective finds a mysterious key&#10;- The key opens a door to another dimension&#10;- He must choose between solving the case or saving the world"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tone</label>
+                    <select [(ngModel)]="tone">
+                        <option *ngFor="let t of tones" [value]="t.value">{{ t.label }}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Point of View</label>
+                    <select [(ngModel)]="pov">
+                        <option *ngFor="let p of povs" [value]="p.value">{{ p.label }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Target Length</label>
+                <select [(ngModel)]="wordCount">
+                    <option *ngFor="let l of lengths" [value]="l.value">{{ l.label }}</option>
+                </select>
+            </div>
+
+            <button (click)="generateCreative()" [disabled]="!plotPoints || isLoading" class="generate-btn">
+                {{ isLoading ? 'Weaving Story...' : 'Generate Story' }}
+            </button>
+
+            <div *ngIf="error" class="error">{{ error }}</div>
+        </div>
+
+        <div class="results-panel">
+            <div *ngIf="!result" class="empty-state">
+                <div class="empty-icon">🎨</div>
+                <h3>Your Creative Story</h3>
+                <p class="empty-message">Fill in your plot points and preferences to generate a creative story. It will
+                    appear here.</p>
+            </div>
+
+            <div *ngIf="result">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="value">{{ result.word_count }}</span>
+                        <span class="label">Words</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="value">{{ result.characters.length }}</span>
+                        <span class="label">Characters</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="value">{{ result.scenes_count }}</span>
+                        <span class="label">Scenes</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="value">{{ result.quality_score }}/100</span>
+                        <span class="label">Quality</span>
+                    </div>
+                </div>
+
+                <div class="characters-section">
+                    <h3>Characters</h3>
+                    <div class="character-cards">
+                        <div *ngFor="let char of result.characters" class="char-card">
+                            <div class="char-name">{{ char.name }}</div>
+                            <div class="char-role">{{ char.role }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h3>Story Preview</h3>
+                    <div class="story-content">
+                        {{ result.content }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
