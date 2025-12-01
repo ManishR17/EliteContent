@@ -1,4 +1,40 @@
-fastapi==0.115.0
-uvicorn==0.32.0
-python-multipart==0.0.9
-python-dotenv==1.0.1
+fastapi
+uvicorn
+pydantic
+
+# AI Services
+anthropic
+openai
+
+# File Parsing
+PyPDF2
+python-docx
+python-multipart
+
+# Environment & Utilities
+python-dotenv
+
+# Web Search & Scraping
+wikipedia-api
+googlesearch-python
+requests
+beautifulsoup4
+lxml
+trafilatura
+httpx
+
+# RAG & Vector Database
+chromadb
+sentence-transformers
+langchain
+langchain-community
+
+# Caching
+redis
+hiredis
+
+# Rate Limiting
+slowapi
+
+# XML Parsing for arXiv
+xmltodict

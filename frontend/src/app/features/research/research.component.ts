@@ -11,35 +11,25 @@ import { ApiService } from '../../core/services/api.service';
     styleUrls: ['./research.component.css']
 })
 export class ResearchComponent {
-    topic: string = '';
-    researchQuestion: string = '';
-    citationStyle: string = 'APA';
-    length: number = 3000;
-    sourcesCount: number = 10;
+    query: string = '';
+    depth: string = 'standard';
+    focusArea: string = '';
+    includeCitations: boolean = true;
     isLoading: boolean = false;
     result: any = null;
     error: string = '';
 
-    citationStyles = [
-        { value: 'APA', label: 'APA (American Psychological Association)' },
-        { value: 'MLA', label: 'MLA (Modern Language Association)' },
-        { value: 'Chicago', label: 'Chicago' },
-        { value: 'Harvard', label: 'Harvard' },
-        { value: 'IEEE', label: 'IEEE (Institute of Electrical and Electronics Engineers)' }
-    ];
-
-    lengthOptions = [
-        { value: 3000, label: 'Standard (3000 words)' },
-        { value: 5000, label: 'Extended (5000 words)' },
-        { value: 8000, label: 'Comprehensive (8000 words)' },
-        { value: 10000, label: 'Dissertation (10000 words)' }
+    depths = [
+        { value: 'quick', label: 'Quick Overview' },
+        { value: 'standard', label: 'Standard Research' },
+        { value: 'comprehensive', label: 'Comprehensive Deep Dive' }
     ];
 
     constructor(private apiService: ApiService) { }
 
     generateResearch() {
-        if (!this.topic || !this.researchQuestion) {
-            this.error = 'Please enter a topic and research question.';
+        if (!this.query) {
+            this.error = 'Please enter a research topic.';
             return;
         }
 
@@ -48,11 +38,11 @@ export class ResearchComponent {
         this.result = null;
 
         const data = {
-            topic: this.topic,
-            question: this.researchQuestion,
-            citation_style: this.citationStyle,
-            length: this.length,
-            sources_count: this.sourcesCount
+            topic: this.query,
+            depth: this.depth,
+            sources_count: 5, // Default
+            include_citations: this.includeCitations,
+            focus_areas: this.focusArea ? [this.focusArea] : []
         };
 
         this.apiService.generateResearch(data).subscribe({

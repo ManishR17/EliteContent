@@ -13,6 +13,7 @@ import { ApiService } from '../../core/services/api.service';
 export class EmailComponent {
     emailType: string = 'professional';
     recipient: string = '';
+    purpose: string = '';
     subject: string = '';
     keyPoints: string = '';
     tone: string = 'professional';
@@ -41,17 +42,11 @@ export class EmailComponent {
         { value: 'apologetic', label: 'Apologetic' }
     ];
 
-    lengths = [
-        { value: 'short', label: 'Short (50-100 words)' },
-        { value: 'medium', label: 'Medium (100-200 words)' },
-        { value: 'long', label: 'Long (200-300 words)' }
-    ];
-
     constructor(private apiService: ApiService) { }
 
     generateEmail() {
-        if (!this.subject.trim() || !this.keyPoints.trim()) {
-            this.error = 'Please enter a subject and key points';
+        if (!this.purpose.trim() || !this.keyPoints.trim()) {
+            this.error = 'Please enter a purpose and key points';
             return;
         }
 
@@ -64,10 +59,9 @@ export class EmailComponent {
         const data = {
             email_type: this.emailType,
             recipient: this.recipient,
-            subject: this.subject,
+            purpose: this.purpose,
             key_points: keyPointsArray,
-            tone: this.tone,
-            length: this.length
+            tone: this.tone
         };
 
         this.apiService.generateEmail(data).subscribe({

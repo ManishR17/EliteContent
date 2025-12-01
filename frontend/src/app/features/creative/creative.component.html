@@ -1,103 +1,107 @@
 <div class="creative-container">
     <div class="header">
         <h1>Creative <span class="gradient-text">Writing</span></h1>
-        <p>Unleash your imagination with AI-assisted storytelling</p>
+        <p>Unleash your creativity with AI-powered storytelling</p>
     </div>
 
     <div class="content-grid">
+        <!-- Input Panel -->
         <div class="input-panel">
-            <div class="form-row">
+            <div class="form-section">
+                <h3><span class="step-number">1</span> Content Basics</h3>
                 <div class="form-group">
                     <label>Content Type</label>
-                    <select [(ngModel)]="contentType">
+                    <select [(ngModel)]="contentType" class="form-select">
                         <option *ngFor="let type of contentTypes" [value]="type.value">{{ type.label }}</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Genre</label>
-                    <select [(ngModel)]="genre">
-                        <option *ngFor="let g of genres" [value]="g.value">{{ g.label }}</option>
-                    </select>
+                    <label>Topic / Premise</label>
+                    <textarea [(ngModel)]="topic" rows="3" class="form-textarea"
+                        placeholder="e.g., A sci-fi story about a robot learning to paint"></textarea>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Plot Points / Ideas (one per line)</label>
-                <textarea [(ngModel)]="plotPoints" rows="6"
-                    placeholder="- A detective finds a mysterious key&#10;- The key opens a door to another dimension&#10;- He must choose between solving the case or saving the world"></textarea>
+            <div class="form-section">
+                <h3><span class="step-number">2</span> Style & Tone</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tone</label>
+                        <select [(ngModel)]="tone" class="form-select">
+                            <option *ngFor="let t of tones" [value]="t.value">{{ t.label }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Creativity Level</label>
+                        <select [(ngModel)]="creativityLevel" class="form-select">
+                            <option value="low">Conservative</option>
+                            <option value="medium">Balanced</option>
+                            <option value="high">Highly Creative</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            <div class="form-row">
+            <div class="form-section">
+                <h3><span class="step-number">3</span> Details</h3>
                 <div class="form-group">
-                    <label>Tone</label>
-                    <select [(ngModel)]="tone">
-                        <option *ngFor="let t of tones" [value]="t.value">{{ t.label }}</option>
-                    </select>
+                    <label>Target Audience</label>
+                    <input type="text" [(ngModel)]="targetAudience" placeholder="e.g., Young Adults" class="form-input">
                 </div>
                 <div class="form-group">
-                    <label>Point of View</label>
-                    <select [(ngModel)]="pov">
-                        <option *ngFor="let p of povs" [value]="p.value">{{ p.label }}</option>
-                    </select>
+                    <label>Additional Instructions</label>
+                    <textarea [(ngModel)]="additionalInstructions" rows="3" class="form-textarea"
+                        placeholder="Any specific plot points, characters, or requirements?"></textarea>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Target Length</label>
-                <select [(ngModel)]="wordCount">
-                    <option *ngFor="let l of lengths" [value]="l.value">{{ l.label }}</option>
-                </select>
-            </div>
-
-            <button (click)="generateCreative()" [disabled]="!plotPoints || isLoading" class="generate-btn">
-                {{ isLoading ? 'Weaving Story...' : 'Generate Story' }}
+            <button (click)="generateContent()" [disabled]="!topic || isLoading" class="generate-btn">
+                <span *ngIf="!isLoading">🚀 Generate Content</span>
+                <span *ngIf="isLoading" class="loading-spinner">⏳ Weaving Magic...</span>
             </button>
 
-            <div *ngIf="error" class="error">{{ error }}</div>
+            <div *ngIf="error" class="error-message">
+                <span class="error-icon">⚠️</span>
+                {{ error }}
+            </div>
         </div>
 
+        <!-- Results Panel -->
         <div class="results-panel">
             <div *ngIf="!result" class="empty-state">
                 <div class="empty-icon">🎨</div>
-                <h3>Your Creative Story</h3>
-                <p class="empty-message">Fill in your plot points and preferences to generate a creative story. It will
-                    appear here.</p>
+                <h3>Your Creative Piece</h3>
+                <p class="empty-message">
+                    Describe your idea on the left.
+                    We'll turn it into a compelling story, blog, or script.
+                </p>
             </div>
 
-            <div *ngIf="result">
-                <div class="stats-grid">
+            <div *ngIf="result" class="results-content">
+                <div class="stats-row">
                     <div class="stat-card">
                         <span class="value">{{ result.word_count }}</span>
                         <span class="label">Words</span>
                     </div>
                     <div class="stat-card">
-                        <span class="value">{{ result.characters.length }}</span>
-                        <span class="label">Characters</span>
+                        <span class="value">{{ result.reading_time_minutes }}m</span>
+                        <span class="label">Read Time</span>
                     </div>
                     <div class="stat-card">
-                        <span class="value">{{ result.scenes_count }}</span>
-                        <span class="label">Scenes</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="value">{{ result.quality_score }}/100</span>
-                        <span class="label">Quality</span>
+                        <span class="value">{{ result.seo_score }}/100</span>
+                        <span class="label">SEO Score</span>
                     </div>
                 </div>
 
-                <div class="characters-section">
-                    <h3>Characters</h3>
-                    <div class="character-cards">
-                        <div *ngFor="let char of result.characters" class="char-card">
-                            <div class="char-name">{{ char.name }}</div>
-                            <div class="char-role">{{ char.role }}</div>
-                        </div>
-                    </div>
+                <div class="content-preview">
+                    <h2>{{ result.title }}</h2>
+                    <pre>{{ result.content }}</pre>
                 </div>
 
-                <div class="preview-section">
-                    <h3>Story Preview</h3>
-                    <div class="story-content">
-                        {{ result.content }}
+                <div class="tags-section" *ngIf="result.meta_tags && result.meta_tags.length > 0">
+                    <h3>🏷️ Tags & Keywords</h3>
+                    <div class="tags-list">
+                        <span *ngFor="let tag of result.meta_tags" class="tag">{{ tag }}</span>
                     </div>
                 </div>
             </div>

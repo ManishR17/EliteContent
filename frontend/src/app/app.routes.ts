@@ -30,7 +30,19 @@ export const routes: Routes = [
         loadComponent: () => import('./features/social-media/social-media.component').then(m => m.SocialMediaComponent)
     },
     {
+        path: 'login',
+        loadComponent: () => import('./features/auth/login.component').then(m => m.LoginComponent)
+    },
+    {
+        path: 'register',
+        loadComponent: () => import('./features/auth/register.component').then(m => m.RegisterComponent)
+    },
+    {
+        path: 'dashboard',
+        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
+    },
+    {
         path: '**',
-        redirectTo: ''
+        redirectTo: 'dashboard'
     }
 ];
