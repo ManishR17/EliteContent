@@ -1,89 +1,107 @@
 <div class="email-container">
     <div class="header">
         <h1>Email <span class="gradient-text">Writer</span></h1>
-        <p>Generate professional emails for any occasion with AI assistance</p>
+        <p>Draft professional, effective emails in seconds</p>
     </div>
 
     <div class="content-grid">
+        <!-- Input Panel -->
         <div class="input-panel">
-            <div class="form-group">
-                <label>Email Type</label>
-                <select [(ngModel)]="emailType">
-                    <option *ngFor="let type of emailTypes" [value]="type.value">{{ type.label }}</option>
-                </select>
+            <div class="form-section">
+                <h3><span class="step-number">1</span> Email Context</h3>
+                <div class="form-group">
+                    <label>Email Type</label>
+                    <select [(ngModel)]="emailType" class="form-select">
+                        <option *ngFor="let type of emailTypes" [value]="type.value">{{ type.label }}</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Recipient Name/Role</label>
+                        <input type="text" [(ngModel)]="recipient" placeholder="e.g., Hiring Manager"
+                            class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Purpose</label>
+                        <input type="text" [(ngModel)]="purpose" placeholder="e.g., Follow up on interview"
+                            class="form-input">
+                    </div>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Recipient (Optional)</label>
-                <input type="text" [(ngModel)]="recipient" placeholder="e.g., John Smith, Hiring Manager">
+            <div class="form-section">
+                <h3><span class="step-number">2</span> Key Details</h3>
+                <div class="form-group">
+                    <label>Key Points to Include</label>
+                    <textarea [(ngModel)]="keyPoints" rows="5" class="form-textarea"
+                        placeholder="- Thank them for their time&#10;- Reiterate interest in the role&#10;- Ask about next steps"></textarea>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Subject Line</label>
-                <input type="text" [(ngModel)]="subject" placeholder="Enter email subject...">
-            </div>
-
-            <div class="form-group">
-                <label>Key Points (one per line)</label>
-                <textarea [(ngModel)]="keyPoints" rows="6"
-                    placeholder="- Request meeting next week&#10;- Discuss project timeline&#10;- Share budget proposal"></textarea>
-            </div>
-
-            <div class="form-row">
+            <div class="form-section">
+                <h3><span class="step-number">3</span> Style</h3>
                 <div class="form-group">
                     <label>Tone</label>
-                    <select [(ngModel)]="tone">
+                    <select [(ngModel)]="tone" class="form-select">
                         <option *ngFor="let t of tones" [value]="t.value">{{ t.label }}</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Length</label>
-                    <select [(ngModel)]="length">
-                        <option *ngFor="let l of lengths" [value]="l.value">{{ l.label }}</option>
-                    </select>
-                </div>
             </div>
 
-            <button (click)="generateEmail()" [disabled]="!subject || !keyPoints || isLoading" class="generate-btn">
-                {{ isLoading ? 'Generating...' : 'Generate Email' }}
+            <button (click)="generateEmail()" [disabled]="!recipient || !purpose || !keyPoints || isLoading"
+                class="generate-btn">
+                <span *ngIf="!isLoading">🚀 Generate Email</span>
+                <span *ngIf="isLoading" class="loading-spinner">⏳ Generating...</span>
             </button>
 
-            <div *ngIf="error" class="error">{{ error }}</div>
+            <div *ngIf="error" class="error-message">
+                <span class="error-icon">⚠️</span>
+                {{ error }}
+            </div>
         </div>
 
+        <!-- Results Panel -->
         <div class="results-panel">
             <div *ngIf="!result" class="empty-state">
                 <div class="empty-icon">📧</div>
-                <h3>Your Generated Email</h3>
-                <p class="empty-message">Enter your email details and key points to generate a professional email. It
-                    will appear here.</p>
+                <h3>Your Draft Email</h3>
+                <p class="empty-message">
+                    Provide the context and key points.
+                    We'll craft a perfectly toned email for you.
+                </p>
             </div>
 
-            <div *ngIf="result">
+            <div *ngIf="result" class="results-content">
                 <div class="info-card">
                     <div class="info-item">
-                        <span class="label">Word Count:</span>
-                        <span class="value">{{ result.word_count || 'N/A' }}</span>
+                        <span class="label">Spam Score</span>
+                        <span class="value" [style.color]="result.spam_score < 30 ? '#22c55e' : '#ef4444'">
+                            {{ result.spam_score }}/100
+                        </span>
                     </div>
                     <div class="info-item">
-                        <span class="label">Readability:</span>
-                        <span class="value">{{ result.readability_score }}/100</span>
+                        <span class="label">Tone</span>
+                        <span class="value">{{ result.tone_detected }}</span>
                     </div>
                 </div>
 
-                <div class="subject-preview" *ngIf="result.subject_line">
-                    <h3>📧 Subject Line</h3>
-                    <div class="subject-box">{{ result.subject_line }}</div>
+                <div class="subject-preview">
+                    <h3>Subject Line</h3>
+                    <div class="subject-box">{{ result.subject }}</div>
                 </div>
 
                 <div class="email-content">
-                    <h3>✉️ Generated Email</h3>
-                    <div class="email-preview">{{ result.email }}</div>
+                    <h3>Email Body</h3>
+                    <div class="email-preview">{{ result.body }}</div>
+                </div>
 
-                    <div class="action-buttons">
-                        <button (click)="copyToClipboard()" class="copy-btn">📋 Copy to Clipboard</button>
-                        <button (click)="reset()" class="reset-btn">Create New Email</button>
-                    </div>
+                <div class="action-buttons">
+                    <button class="copy-btn" (click)="copyToClipboard()">
+                        📋 Copy to Clipboard
+                    </button>
+                    <button class="reset-btn" (click)="result = null">
+                        🔄 Start Over
+                    </button>
                 </div>
             </div>
         </div>

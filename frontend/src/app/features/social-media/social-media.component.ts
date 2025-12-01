@@ -14,6 +14,7 @@ export class SocialMediaComponent {
     platform: string = 'linkedin';
     contentType: string = 'post';
     topic: string = '';
+    targetAudience: string = '';
     keyPoints: string = '';
     tone: string = 'professional';
     includeHashtags: boolean = true;
@@ -50,12 +51,6 @@ export class SocialMediaComponent {
         { value: 'authoritative', label: 'Authoritative' }
     ];
 
-    lengthOptions = [
-        { value: 'short', label: 'Short' },
-        { value: 'medium', label: 'Medium' },
-        { value: 'long', label: 'Long' }
-    ];
-
     constructor(private apiService: ApiService) { }
 
     get selectedPlatform() {
@@ -72,17 +67,14 @@ export class SocialMediaComponent {
         this.error = '';
         this.result = null;
 
-        const keyPointsArray = this.keyPoints ? this.keyPoints.split('\n').filter(point => point.trim()) : [];
-
         const data = {
             platform: this.platform,
             content_type: this.contentType,
             topic: this.topic,
-            key_points: keyPointsArray,
             tone: this.tone,
             include_hashtags: this.includeHashtags,
-            include_emojis: this.includeEmojis,
-            target_length: this.targetLength
+            include_emoji: this.includeEmojis,
+            target_audience: this.targetAudience
         };
 
         this.apiService.generateSocialMedia(data).subscribe({

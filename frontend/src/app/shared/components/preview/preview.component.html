@@ -1,0 +1,79 @@
+<div class="preview-container" [ngSwitch]="type">
+
+    <!-- Resume / Document Preview (A4 Page) -->
+    <div *ngSwitchCase="'resume'" class="a4-page">
+        <div class="page-content" [innerHTML]="formatContent(content)"></div>
+    </div>
+    <div *ngSwitchCase="'document'" class="a4-page">
+        <div class="page-content" [innerHTML]="formatContent(content)"></div>
+    </div>
+    <div *ngSwitchCase="'creative'" class="a4-page creative-page">
+        <h1 *ngIf="metadata?.title" class="creative-title">{{ metadata.title }}</h1>
+        <div class="page-content" [innerHTML]="formatContent(content)"></div>
+    </div>
+
+    <!-- Email Preview -->
+    <div *ngSwitchCase="'email'" class="email-client">
+        <div class="email-header">
+            <div class="email-row">
+                <span class="label">To:</span>
+                <span class="value">{{ metadata?.recipient || 'Recipient' }}</span>
+            </div>
+            <div class="email-row">
+                <span class="label">Subject:</span>
+                <span class="value subject">{{ metadata?.subject || 'No Subject' }}</span>
+            </div>
+        </div>
+        <div class="email-body" [innerHTML]="formatContent(content)"></div>
+        <div class="email-signature" *ngIf="metadata?.signature">
+            <br>
+            <div [innerHTML]="formatContent(metadata.signature)"></div>
+        </div>
+    </div>
+
+    <!-- Social Media Preview -->
+    <div *ngSwitchCase="'social'" class="social-preview">
+        <!-- Twitter -->
+        <div *ngIf="metadata?.platform === 'twitter'" class="twitter-card">
+            <div class="tweet-header">
+                <div class="avatar"></div>
+                <div class="user-info">
+                    <span class="name">You</span>
+                    <span class="handle">&#64;creator</span>
+                </div>
+            </div>
+            <div class="tweet-content" [innerHTML]="formatContent(content)"></div>
+            <div class="tweet-footer">
+                <span>💬 12</span>
+                <span>Hz 5</span>
+                <span>❤️ 42</span>
+            </div>
+        </div>
+
+        <!-- LinkedIn -->
+        <div *ngIf="metadata?.platform === 'linkedin'" class="linkedin-card">
+            <div class="linkedin-header">
+                <div class="avatar"></div>
+                <div class="user-info">
+                    <span class="name">You</span>
+                    <span class="role">Content Creator</span>
+                </div>
+            </div>
+            <div class="linkedin-content" [innerHTML]="formatContent(content)"></div>
+            <div class="linkedin-footer">
+                <span>👍 Like</span>
+                <span>💬 Comment</span>
+                <span>share Share</span>
+            </div>
+        </div>
+
+        <!-- Default Social -->
+        <div *ngIf="!['twitter', 'linkedin'].includes(metadata?.platform)" class="generic-social-card">
+            <div class="social-header">
+                <span class="platform-badge">{{ metadata?.platform || 'Social' }}</span>
+            </div>
+            <div class="social-content" [innerHTML]="formatContent(content)"></div>
+        </div>
+    </div>
+
+</div>

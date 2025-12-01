@@ -1,0 +1,201 @@
+.preview-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    background: #f1f5f9;
+    /* Light gray background for contrast */
+    border-radius: 8px;
+    overflow-y: auto;
+}
+
+/* A4 Page */
+.a4-page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 20mm;
+    margin: 0 auto;
+    background: white;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    color: #000;
+    font-family: 'Times New Roman', serif;
+    font-size: 12pt;
+    line-height: 1.5;
+}
+
+.creative-page {
+    font-family: 'Georgia', serif;
+}
+
+.creative-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-family: 'Helvetica', sans-serif;
+}
+
+/* Email Client */
+.email-client {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    color: #334155;
+    font-family: sans-serif;
+}
+
+.email-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+    border-radius: 8px 8px 0 0;
+}
+
+.email-row {
+    display: flex;
+    margin-bottom: 0.5rem;
+}
+
+.email-row:last-child {
+    margin-bottom: 0;
+}
+
+.email-row .label {
+    width: 80px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.email-row .value {
+    font-weight: 500;
+}
+
+.email-row .value.subject {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.email-body {
+    padding: 2rem;
+    white-space: pre-wrap;
+    min-height: 300px;
+}
+
+.email-signature {
+    margin-top: 2rem;
+    color: #64748b;
+}
+
+/* Social Cards */
+.social-preview {
+    width: 100%;
+    max-width: 600px;
+}
+
+/* Twitter */
+.twitter-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1rem;
+    color: #0f172a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.tweet-header {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #cbd5e1;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-info .name {
+    font-weight: 700;
+}
+
+.user-info .handle {
+    color: #64748b;
+}
+
+.tweet-content {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    white-space: pre-wrap;
+}
+
+.tweet-footer {
+    display: flex;
+    gap: 2rem;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+/* LinkedIn */
+.linkedin-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    color: #0f172a;
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
+}
+
+.linkedin-header {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.linkedin-content {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    white-space: pre-wrap;
+}
+
+.linkedin-footer {
+    display: flex;
+    gap: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #e2e8f0;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Generic */
+.generic-social-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    color: #0f172a;
+}
+
+.platform-badge {
+    background: #e2e8f0;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.social-content {
+    margin-top: 1rem;
+    white-space: pre-wrap;
+}

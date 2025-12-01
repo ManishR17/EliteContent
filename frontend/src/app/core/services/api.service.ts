@@ -11,12 +11,30 @@ export class ApiService {
 
     constructor(private http: HttpClient) { }
 
-    analyzeResume(file: File, jobDescription: string): Observable<any> {
+    generateResume(
+        file: File,
+        jobDescription: string,
+        targetRole: string,
+        experienceLevel: string,
+        skillsToHighlight: string[],
+        tonePreference: string,
+        formatType: string,
+        additionalAchievements?: string
+    ): Observable<any> {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('job_description', jobDescription);
-        return this.http.post(`${this.apiUrl}/resume/analyze`, formData);
+        formData.append('target_role', targetRole);
+        formData.append('experience_level', experienceLevel);
+        formData.append('skills_to_highlight', JSON.stringify(skillsToHighlight));
+        formData.append('tone_preference', tonePreference);
+        formData.append('format_type', formatType);
+        if (additionalAchievements) {
+            formData.append('additional_achievements', additionalAchievements);
+        }
+        return this.http.post(`${this.apiUrl}/resume/generate`, formData);
     }
+
 
     generateDocument(data: any): Observable<any> {
         return this.http.post(`${this.apiUrl}/document/generate`, data);
@@ -35,6 +53,10 @@ export class ApiService {
     }
 
     generateSocialMedia(data: any): Observable<any> {
-        return this.http.post(`${this.apiUrl}/social-media/generate`, data);
+        return this.http.post(`${this.apiUrl}/social/generate`, data);
+    }
+
+    getDashboardStats(): Observable<any> {
+        return this.http.get(`${this.apiUrl}/dashboard/stats`);
     }
 }

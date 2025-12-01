@@ -1,21 +1,52 @@
-version: "3.9"
+version: '3.8'
 
 services:
-  frontend:
-    build: ./frontend
+  redis:
+    image: redis:7-alpine
+    container_name: elitecontent-redis
     ports:
-      - "55909:55909"
+      - "6379:6379"
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    command: [ "ng", "serve", "--host", "0.0.0.0", "--port", "55909" ]
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   backend:
     build: ./backend
+    container_name: elitecontent-backend
     ports:
       - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CHROMA_PERSIST_DIR=/app/chroma_db
     volumes:
       - ./backend:/app
-    env_file:
-      - ./backend/.env
-    command: [ "python", "main.py" ]
+      - chroma_data:/app/chroma_db
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: elitecontent-frontend
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+    driver: local
+  chroma_data:
+    driver: local

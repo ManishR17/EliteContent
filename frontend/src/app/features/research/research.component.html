@@ -1,91 +1,93 @@
 <div class="research-container">
     <div class="header">
-        <h1>Research <span class="gradient-text">Paper</span></h1>
-        <p>Generate academic papers with proper citations and sources</p>
+        <h1>AI <span class="gradient-text">Research</span></h1>
+        <p>Deep web research and synthesis in seconds</p>
     </div>
 
     <div class="content-grid">
+        <!-- Input Panel -->
         <div class="input-panel">
-            <div class="form-group">
-                <label>Research Topic</label>
-                <input type="text" [(ngModel)]="topic" placeholder="e.g., Impact of AI on Healthcare">
-            </div>
-
-            <div class="form-group">
-                <label>Research Question</label>
-                <textarea [(ngModel)]="researchQuestion" rows="3"
-                    placeholder="e.g., How does artificial intelligence improve diagnostic accuracy in modern medicine?"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Citation Style</label>
-                <select [(ngModel)]="citationStyle">
-                    <option *ngFor="let style of citationStyles" [value]="style.value">{{ style.label }}</option>
-                </select>
-            </div>
-
-            <div class="form-row">
+            <div class="form-section">
+                <h3><span class="step-number">1</span> Research Topic</h3>
                 <div class="form-group">
-                    <label>Target Length</label>
-                    <select [(ngModel)]="length">
-                        <option *ngFor="let opt of lengthOptions" [value]="opt.value">{{ opt.label }}</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Number of Sources</label>
-                    <input type="number" [(ngModel)]="sourcesCount" min="5" max="50">
+                    <label>Research Query</label>
+                    <textarea [(ngModel)]="query" rows="3" class="form-textarea"
+                        placeholder="What do you want to research? e.g., Impact of AI on healthcare in 2025"></textarea>
                 </div>
             </div>
 
-            <button (click)="generateResearch()" [disabled]="!topic || !researchQuestion || isLoading"
-                class="generate-btn">
-                {{ isLoading ? 'Researching & Writing...' : 'Generate Paper' }}
+            <div class="form-section">
+                <h3><span class="step-number">2</span> Scope & Depth</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Depth</label>
+                        <select [(ngModel)]="depth" class="form-select">
+                            <option *ngFor="let d of depths" [value]="d.value">{{ d.label }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Focus Area</label>
+                        <input type="text" [(ngModel)]="focusArea" placeholder="e.g., Financial implications"
+                            class="form-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3><span class="step-number">3</span> Options</h3>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" [(ngModel)]="includeCitations"> Include Citations
+                    </label>
+                </div>
+            </div>
+
+            <button (click)="generateResearch()" [disabled]="!query || isLoading" class="generate-btn">
+                <span *ngIf="!isLoading">🚀 Start Research</span>
+                <span *ngIf="isLoading" class="loading-spinner">⏳ Researching...</span>
             </button>
 
-            <div *ngIf="error" class="error">{{ error }}</div>
+            <div *ngIf="error" class="error-message">
+                <span class="error-icon">⚠️</span>
+                {{ error }}
+            </div>
         </div>
 
+        <!-- Results Panel -->
         <div class="results-panel">
             <div *ngIf="!result" class="empty-state">
-                <div class="empty-icon">🎓</div>
-                <h3>Your Research Paper</h3>
-                <p class="empty-message">Enter your research topic and question to generate an academic paper with
-                    proper citations. It will appear here.</p>
+                <div class="empty-icon">🔍</div>
+                <h3>Research Results</h3>
+                <p class="empty-message">
+                    Enter a topic to start.
+                    Our AI will search the web, analyze sources, and synthesize a report.
+                </p>
             </div>
 
-            <div *ngIf="result">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <span class="value">{{ result.word_count }}</span>
-                        <span class="label">Words</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="value">{{ result.citations_count }}</span>
-                        <span class="label">Citations</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="value">{{ result.sources.length }}</span>
-                        <span class="label">Sources</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="value">{{ result.quality_score }}/100</span>
-                        <span class="label">Quality</span>
-                    </div>
+            <div *ngIf="result" class="results-content">
+                <div class="confidence-card">
+                    <span class="confidence-value">{{ (result.confidence_score * 100) | number:'1.0-0' }}%</span>
+                    <span class="confidence-label">Confidence Score</span>
                 </div>
 
-                <div class="preview-section">
-                    <h3>Paper Preview</h3>
-                    <div class="paper-content">
-                        <div *ngFor="let section of result.sections" class="section">
-                            <h4>{{ section.title }}</h4>
-                            <p>{{ section.content }}</p>
-                        </div>
+                <div class="summary-section">
+                    <h3>Executive Summary</h3>
+                    <div class="summary-content">{{ result.summary }}</div>
+                </div>
 
-                        <div class="references">
-                            <h4>References</h4>
-                            <ul>
-                                <li *ngFor="let source of result.sources">{{ source }}</li>
-                            </ul>
+                <div class="findings-section" *ngIf="result.key_findings && result.key_findings.length > 0">
+                    <h3>🔑 Key Findings</h3>
+                    <ul class="findings-list">
+                        <li *ngFor="let finding of result.key_findings">{{ finding }}</li>
+                    </ul>
+                </div>
+
+                <div class="sources-section" *ngIf="result.sources && result.sources.length > 0">
+                    <h3>📚 Sources</h3>
+                    <div class="sources-list">
+                        <div *ngFor="let source of result.sources" class="source-item">
+                            <a [href]="source.url" target="_blank" class="source-title">{{ source.title }}</a>
+                            <p class="source-snippet">{{ source.snippet }}</p>
                         </div>
                     </div>
                 </div>

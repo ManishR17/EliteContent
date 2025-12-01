@@ -5,75 +5,106 @@
     </div>
 
     <div class="content-grid">
+        <!-- Input Panel -->
         <div class="input-panel">
-            <div class="form-group">
-                <label>Document Type</label>
-                <select [(ngModel)]="documentType">
-                    <option *ngFor="let type of documentTypes" [value]="type.value">{{ type.label }}</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Topic</label>
-                <input type="text" [(ngModel)]="topic" placeholder="e.g., Q4 Marketing Strategy">
-            </div>
-
-            <div class="form-group">
-                <label>Key Points (one per line)</label>
-                <textarea [(ngModel)]="keyPoints" rows="6"
-                    placeholder="- Focus on social media growth&#10;- Increase budget by 15%&#10;- Launch new influencer campaign"></textarea>
-            </div>
-
-            <div class="form-row">
+            <div class="form-section">
+                <h3><span class="step-number">1</span> Document Details</h3>
                 <div class="form-group">
-                    <label>Tone</label>
-                    <select [(ngModel)]="tone">
-                        <option *ngFor="let t of tones" [value]="t.value">{{ t.label }}</option>
+                    <label>Document Type</label>
+                    <select [(ngModel)]="documentType" class="form-select">
+                        <option *ngFor="let type of documentTypes" [value]="type.value">{{ type.label }}</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Length</label>
-                    <select [(ngModel)]="length">
-                        <option *ngFor="let l of lengths" [value]="l.value">{{ l.label }}</option>
-                    </select>
+                    <label>Topic / Subject</label>
+                    <input type="text" [(ngModel)]="topic" placeholder="e.g., Q4 Marketing Strategy" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Target Audience</label>
+                    <input type="text" [(ngModel)]="targetAudience" placeholder="e.g., Executive Team"
+                        class="form-input">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3><span class="step-number">2</span> Key Content</h3>
+                <div class="form-group">
+                    <label>Key Points (one per line)</label>
+                    <textarea [(ngModel)]="keyPoints" rows="6" class="form-textarea"
+                        placeholder="- Focus on social media growth&#10;- Increase budget by 15%&#10;- Launch new influencer campaign"></textarea>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3><span class="step-number">3</span> Preferences</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tone</label>
+                        <select [(ngModel)]="tone" class="form-select">
+                            <option *ngFor="let t of tones" [value]="t.value">{{ t.label }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Length</label>
+                        <select [(ngModel)]="length" class="form-select">
+                            <option *ngFor="let l of lengths" [value]="l.value">{{ l.label }}</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             <button (click)="generateDocument()" [disabled]="!topic || !keyPoints || isLoading" class="generate-btn">
-                {{ isLoading ? 'Generating...' : 'Generate Document' }}
+                <span *ngIf="!isLoading">🚀 Generate Document</span>
+                <span *ngIf="isLoading" class="loading-spinner">⏳ Generating...</span>
             </button>
 
-            <div *ngIf="error" class="error">{{ error }}</div>
+            <div *ngIf="error" class="error-message">
+                <span class="error-icon">⚠️</span>
+                {{ error }}
+            </div>
         </div>
 
+        <!-- Results Panel -->
         <div class="results-panel">
             <div *ngIf="!result" class="empty-state">
                 <div class="empty-icon">📝</div>
                 <h3>Your Generated Document</h3>
-                <p class="empty-message">Fill in the details and click Generate to create your professional document. It
-                    will appear here.</p>
+                <p class="empty-message">
+                    Fill in the details on the left to create a professional document.
+                    Our AI will structure and write it for you instantly.
+                </p>
             </div>
 
-            <div *ngIf="result">
+            <div *ngIf="result" class="results-content">
                 <div class="stats-row">
                     <div class="stat-card">
                         <span class="value">{{ result.word_count }}</span>
                         <span class="label">Words</span>
                     </div>
                     <div class="stat-card">
-                        <span class="value">{{ result.sections.length }}</span>
-                        <span class="label">Sections</span>
+                        <span class="value">{{ result.readability_score }}</span>
+                        <span class="label">Readability</span>
                     </div>
                 </div>
 
-                <div class="preview-section">
-                    <h3>Document Preview</h3>
-                    <div class="document-content">
-                        <div *ngFor="let section of result.sections" class="section">
-                            <h4>{{ section.title }}</h4>
-                            <p>{{ section.content }}</p>
-                        </div>
+                <div class="document-content">
+                    <div *ngFor="let section of result.sections" class="section">
+                        <h4>{{ section.title }}</h4>
+                        <pre>{{ section.content }}</pre>
                     </div>
+                </div>
+
+                <div class="actions-row" style="margin-top: 20px; text-align: right;">
+                    <button (click)="downloadDocument()" class="generate-btn" style="width: auto; padding: 0 20px;">
+                        📥 Download Document
+                    </button>
+                </div>
+
+                <div class="suggestions-section" *ngIf="result.suggestions && result.suggestions.length > 0">
+                    <h3>💡 Improvement Suggestions</h3>
+                    <ul class="suggestions-list">
+                        <li *ngFor="let suggestion of result.suggestions">{{ suggestion }}</li>
+                    </ul>
                 </div>
             </div>
         </div>

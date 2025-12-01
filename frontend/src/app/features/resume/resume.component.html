@@ -1,63 +1,182 @@
 <div class="resume-container">
     <div class="header">
-        <h1>Resume <span class="gradient-text">Tailor</span></h1>
-        <p>Optimize your resume for any job description using AI</p>
+        <h1>AI ATS <span class="gradient-text">Resume Writer</span></h1>
+        <p>Generate tailored, ATS-friendly resumes optimized for your target job</p>
     </div>
 
     <div class="content-grid">
+        <!-- Input Panel -->
         <div class="input-panel">
-            <div class="upload-section">
-                <h3>1. Upload Resume</h3>
-                <input type="file" (change)="onFileSelected($event)" accept=".pdf,.docx" class="file-input">
+            <div class="form-section">
+                <h3><span class="step-number">1</span> Upload Your Resume</h3>
+                <div class="file-upload-wrapper">
+                    <input type="file" id="resume-file" (change)="onFileSelected($event)" accept=".pdf,.docx"
+                        class="file-input">
+                    <label for="resume-file" class="file-label">
+                        <span class="upload-icon">📄</span>
+                        <span class="upload-text">
+                            {{ selectedFile ? selectedFile.name : 'Choose PDF or DOCX file' }}
+                        </span>
+                    </label>
+                </div>
             </div>
 
-            <div class="job-section">
-                <h3>2. Job Description</h3>
-                <textarea [(ngModel)]="jobDescription" placeholder="Paste the job description here..."
-                    rows="10"></textarea>
+            <div class="form-section">
+                <h3><span class="step-number">2</span> Job Description</h3>
+                <textarea [(ngModel)]="jobDescription" placeholder="Paste the complete job description here..." rows="6"
+                    class="form-textarea"></textarea>
             </div>
 
-            <button (click)="analyzeResume()" [disabled]="!selectedFile || !jobDescription || isLoading"
-                class="analyze-btn">
-                {{ isLoading ? 'Analyzing...' : 'Analyze & Tailor' }}
+            <div class="form-section">
+                <h3><span class="step-number">3</span> Target Details</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Target Role / Job Title</label>
+                        <input type="text" [(ngModel)]="targetRole" placeholder="e.g., Senior Software Engineer"
+                            class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Experience Level</label>
+                        <select [(ngModel)]="experienceLevel" class="form-select">
+                            <option *ngFor="let level of experienceLevels" [value]="level">
+                                {{ level }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3><span class="step-number">4</span> Skills to Highlight</h3>
+                <div class="skills-input-wrapper">
+                    <input type="text" [(ngModel)]="skillsInput" (keyup.enter)="addSkill()"
+                        placeholder="Type skills and press Enter (e.g., Python, React, AWS)" class="form-input">
+                    <button (click)="addSkill()" class="add-skill-btn" type="button">Add</button>
+                </div>
+                <div class="skills-tags" *ngIf="skillsToHighlight.length > 0">
+                    <span *ngFor="let skill of skillsToHighlight" class="skill-tag">
+                        {{ skill }}
+                        <button (click)="removeSkill(skill)" class="remove-skill">×</button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3><span class="step-number">5</span> Preferences</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tone</label>
+                        <select [(ngModel)]="tonePreference" class="form-select">
+                            <option *ngFor="let tone of toneOptions" [value]="tone">
+                                {{ tone }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Format Style</label>
+                        <select [(ngModel)]="formatType" class="form-select">
+                            <option *ngFor="let format of formatOptions" [value]="format">
+                                {{ format }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3><span class="step-number">6</span> Additional Achievements (Optional)</h3>
+                <textarea [(ngModel)]="additionalAchievements"
+                    placeholder="Any additional achievements or accomplishments to emphasize..." rows="4"
+                    class="form-textarea"></textarea>
+            </div>
+
+            <button (click)="generateResume()" [disabled]="!selectedFile || !jobDescription || !targetRole || isLoading"
+                class="generate-btn">
+                <span *ngIf="!isLoading">🚀 Generate Tailored Resume</span>
+                <span *ngIf="isLoading" class="loading-spinner">⏳ Generating...</span>
             </button>
 
-            <div *ngIf="error" class="error">{{ error }}</div>
+            <div *ngIf="error" class="error-message">
+                <span class="error-icon">⚠️</span>
+                {{ error }}
+            </div>
         </div>
 
+        <!-- Results Panel -->
         <div class="results-panel">
             <div *ngIf="!result" class="empty-state">
-                <div class="empty-icon">📄</div>
+                <div class="empty-icon">✨</div>
                 <h3>Your Tailored Resume</h3>
-                <p class="empty-message">Upload your resume and paste a job description to get started. Your ATS-optimized resume will appear here.</p>
+                <p class="empty-message">
+                    Fill in the form on the left to generate your ATS-optimized resume.
+                    Our AI will analyze the job description and tailor your resume accordingly.
+                </p>
+                <div class="features-list">
+                    <div class="feature-item">✓ ATS-Optimized Keywords</div>
+                    <div class="feature-item">✓ Skills Matching Analysis</div>
+                    <div class="feature-item">✓ Professional Formatting</div>
+                    <div class="feature-item">✓ Instant Download</div>
+                </div>
             </div>
 
-            <div *ngIf="result">
-                <div class="score-card">
-                    <div class="score-circle">
-                        <span class="score">{{ result.ats_score }}</span>
-                        <span class="label">ATS Score</span>
+            <div *ngIf="result" class="results-content">
+                <!-- ATS Score -->
+                <div class="score-section">
+                    <div class="score-card">
+                        <div class="score-circle" [class.high-score]="result.ats_score >= 70"
+                            [class.medium-score]="result.ats_score >= 50 && result.ats_score < 70"
+                            [class.low-score]="result.ats_score < 50">
+                            <span class="score-value">{{ result.ats_score }}</span>
+                            <span class="score-label">ATS Score</span>
+                        </div>
+                        <div class="score-info">
+                            <h4>ATS Compatibility</h4>
+                            <p>Your resume has a {{ result.ats_score }}% match with the job description</p>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Skills Analysis -->
                 <div class="analysis-section">
-                    <h3>Missing Skills</h3>
-                    <div class="tags">
-                        <span *ngFor="let skill of result.missing_skills" class="tag missing">{{ skill }}</span>
+                    <h4>✅ Matched Skills ({{ result.matched_skills.length }})</h4>
+                    <div class="skills-tags">
+                        <span *ngFor="let skill of result.matched_skills" class="skill-tag matched">
+                            {{ skill }}
+                        </span>
                     </div>
+                    <p class="hint-text" *ngIf="result.matched_skills.length === 0">
+                        No matched skills found. Consider adding more relevant skills.
+                    </p>
                 </div>
 
-                <div class="analysis-section">
-                    <h3>Matched Skills</h3>
-                    <div class="tags">
-                        <span *ngFor="let skill of result.matched_skills" class="tag matched">{{ skill }}</span>
+                <div class="analysis-section" *ngIf="result.missing_skills.length > 0">
+                    <h4>⚠️ Missing Skills ({{ result.missing_skills.length }})</h4>
+                    <div class="skills-tags">
+                        <span *ngFor="let skill of result.missing_skills.slice(0, 10)" class="skill-tag missing">
+                            {{ skill }}
+                        </span>
                     </div>
+                    <p class="hint-text">Consider adding these skills if you have experience with them.</p>
                 </div>
 
-                <div class="preview-section">
-                    <h3>Tailored Resume Preview</h3>
-                    <div class="preview-content">
-                        {{ result.tailored_resume }}
+                <!-- Suggestions -->
+                <div class="suggestions-section" *ngIf="result.suggestions && result.suggestions.length > 0">
+                    <h4>💡 Improvement Suggestions</h4>
+                    <ul class="suggestions-list">
+                        <li *ngFor="let suggestion of result.suggestions">{{ suggestion }}</li>
+                    </ul>
+                </div>
+
+                <!-- Generated Resume -->
+                <div class="resume-preview-section">
+                    <div class="preview-header">
+                        <h4>📄 Your Tailored Resume</h4>
+                        <button (click)="downloadResume()" class="download-btn">
+                            ⬇️ Download
+                        </button>
+                    </div>
+                    <div class="resume-content">
+                        <pre>{{ result.tailored_resume }}</pre>
                     </div>
                 </div>
             </div>

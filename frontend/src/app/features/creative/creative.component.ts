@@ -12,11 +12,8 @@ import { ApiService } from '../../core/services/api.service';
 })
 export class CreativeComponent {
     contentType: string = 'story';
-    genre: string = 'sci-fi';
-    plotPoints: string = '';
+    topic: string = '';
     tone: string = 'suspenseful';
-    pov: string = 'third_limited';
-    wordCount: string = 'medium';
     isLoading: boolean = false;
     result: any = null;
     error: string = '';
@@ -55,18 +52,15 @@ export class CreativeComponent {
         { value: 'third_omni', label: 'Third Person Omniscient' }
     ];
 
-    lengths = [
-        { value: 'flash', label: 'Flash Fiction (1000 words)' },
-        { value: 'short', label: 'Short (3000 words)' },
-        { value: 'medium', label: 'Medium (5000 words)' },
-        { value: 'long', label: 'Long (8000 words)' }
-    ];
+    creativityLevel: string = 'medium';
+    targetAudience: string = '';
+    additionalInstructions: string = '';
 
     constructor(private apiService: ApiService) { }
 
-    generateCreative() {
-        if (!this.plotPoints) {
-            this.error = 'Please enter some plot points or ideas.';
+    generateContent() {
+        if (!this.topic) {
+            this.error = 'Please enter a topic.';
             return;
         }
 
@@ -74,15 +68,14 @@ export class CreativeComponent {
         this.error = '';
         this.result = null;
 
-        const plotPointsArray = this.plotPoints.split('\n').filter(point => point.trim());
-
         const data = {
-            type: this.contentType,
-            genre: this.genre,
-            plot_points: plotPointsArray,
+            content_type: this.contentType,
+            topic: this.topic,
+            style: this.creativityLevel, // Mapping creativity level to style
+            target_audience: this.targetAudience || 'General Audience',
+            length: 'medium', // Default length
             tone: this.tone,
-            pov: this.pov,
-            length: this.wordCount
+            keywords: this.additionalInstructions ? [this.additionalInstructions] : []
         };
 
         this.apiService.generateCreative(data).subscribe({

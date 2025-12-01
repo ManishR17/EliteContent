@@ -13,6 +13,7 @@ import { ApiService } from '../../core/services/api.service';
 export class DocumentComponent {
     documentType: string = 'proposal';
     topic: string = '';
+    targetAudience: string = '';
     keyPoints: string = '';
     tone: string = 'professional';
     length: string = 'medium';
@@ -56,8 +57,9 @@ export class DocumentComponent {
         const keyPointsArray = this.keyPoints.split('\n').filter(point => point.trim());
 
         const data = {
-            type: this.documentType,
+            document_type: this.documentType,
             topic: this.topic,
+            target_audience: this.targetAudience || 'General Audience',
             key_points: keyPointsArray,
             tone: this.tone,
             length: this.length
@@ -74,5 +76,22 @@ export class DocumentComponent {
                 console.error(err);
             }
         });
+    }
+
+    downloadDocument() {
+        if (!this.result) return;
+
+        let content = `Title: ${this.topic}\n\n`;
+        this.result.sections.forEach((section: any) => {
+            content += `${section.title}\n${section.content}\n\n`;
+        });
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${this.topic.replace(/\s+/g, '_')}_document.txt`;
+        a.click();
+        window.URL.revokeObjectURL(url);
     }
 }

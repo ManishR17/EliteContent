@@ -1,0 +1,23 @@
+<nav class="navbar">
+    <div class="nav-container">
+        <a routerLink="/" class="nav-logo">
+            <span class="logo-icon">⚡</span>
+            EliteContent
+        </a>
+
+        <div class="nav-links">
+            <ng-container *ngIf="currentUser$ | async as user; else guestLinks">
+                <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+                <div class="user-menu">
+                    <span class="user-email">{{ user.email }}</span>
+                    <button (click)="logout()" class="logout-btn">Logout</button>
+                </div>
+            </ng-container>
+
+            <ng-template #guestLinks>
+                <a routerLink="/login" routerLinkActive="active">Login</a>
+                <a routerLink="/register" routerLinkActive="active" class="register-btn">Get Started</a>
+            </ng-template>
+        </div>
+    </div>
+</nav>
