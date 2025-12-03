@@ -119,17 +119,32 @@ async def _generate_research_summary_with_rag(
     if ai_service.service_type == "demo":
         return _generate_demo_research(request, sources)
     
-    # Build enhanced prompt with RAG context
+    # Build enhanced prompt with RAG context and all request fields
     sources_text = "\n\n".join([
         f"Source {i+1}: {source.title}\n{source.snippet}"
         for i, source in enumerate(sources)
     ])
     
     focus_text = "\n".join(f"- {area}" for area in request.focus_areas) if request.focus_areas else "General overview"
+    sections_text = "\n".join(f"- {section}" for section in request.sections_needed) if request.sections_needed else "Standard research structure"
     
     prompt = f"""Conduct comprehensive research on: {request.topic}
 
-**Research Depth:** {request.depth}
+**Research Question:**
+{request.research_question}
+
+**Research Parameters:**
+- Depth: {request.depth}
+- Academic Level: {request.academic_level}
+- Citation Style: {request.citation_style}
+- Target Word Count: {request.word_count or 'Not specified'}
+- Sources to Use: {request.sources_count}
+
+**Required Sections:**
+{sections_text}
+
+**Focus Areas:**
+{focus_text}
 
 **RAG Context (Relevant Information from Vector Store):**
 {rag_context if rag_context else "No additional context available"}
@@ -137,30 +152,30 @@ async def _generate_research_summary_with_rag(
 **Current Search Results:**
 {sources_text}
 
-**Focus Areas:**
-{focus_text}
-
 **Instructions:**
-1. Synthesize information from RAG context and current sources
-2. Identify key themes and findings
-3. Provide comprehensive, well-structured analysis
-4. Maintain objectivity and accuracy
-5. Cite sources appropriately
-6. Focus on the specified areas
-7. Use the RAG context to provide deeper insights
+1. Answer the research question: {request.research_question}
+2. Synthesize information from RAG context and current sources
+3. Structure the response with these sections: {', '.join(request.sections_needed) if request.sections_needed else 'introduction, analysis, conclusion'}
+4. Focus specifically on: {', '.join(request.focus_areas) if request.focus_areas else 'general overview'}
+5. Write at {request.academic_level} academic level
+6. Target approximately {request.word_count or 1000} words
+7. Identify key themes and findings
+8. Provide comprehensive, well-structured analysis
+9. Maintain objectivity and accuracy
+10. Use {request.citation_style} citation style
+11. Use the RAG context to provide deeper insights
+12. Ensure all focus areas are adequately covered
 
 Output format:
-SUMMARY:
-[Comprehensive research summary using both RAG context and current sources, 3-5 paragraphs]
+SUMMARY: [comprehensive research summary]
 
 KEY_FINDINGS:
-- [Finding 1]
-- [Finding 2]
-- [Finding 3]
-- [Finding 4]
-- [Finding 5]
+- [finding 1]
+- [finding 2]
+- [finding 3]
+...
 
-Generate a well-researched, professional summary that leverages both the vector store context and current search results."""
+Generate only the summary and key findings, no meta-commentary."""
 
     # Generate with AI  
     if ai_service.service_type == "claude":

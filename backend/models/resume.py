@@ -3,15 +3,27 @@ from typing import List, Optional, Dict
 
 
 class ResumeGenerationRequest(BaseModel):
-    """Request model for resume generation"""
-    job_description: str = Field(..., description="Job description text")
-    target_role: str = Field(..., description="Target job title/role")
-    experience_level: str = Field(..., description="Experience level (Entry Level, Mid-Level, Senior, Lead, Executive)")
-    skills_to_highlight: List[str] = Field(default_factory=list, description="Skills to emphasize")
-    tone_preference: str = Field(default="Professional", description="Tone preference (Professional, Confident, Humble, Assertive, Balanced)")
-    format_type: str = Field(default="ATS-Friendly", description="Resume format type (Minimal, ATS-Friendly, Modern, Executive)")
-    additional_achievements: Optional[str] = Field(None, description="Additional achievements to highlight")
-    use_multi_agent: bool = Field(default=False, description="Use multi-agent system for higher quality")
+    """Request model for resume generation with comprehensive inputs"""
+    
+    # REQUIRED FIELDS
+    job_description: str = Field(..., description="Full job description text")
+    target_job_title: str = Field(..., description="Target job title (e.g., 'Senior Software Engineer')")
+    years_of_experience: int = Field(..., description="Total years of professional experience", ge=0, le=50)
+    core_skills: List[str] = Field(..., description="Core skills to highlight (e.g., ['Python', 'FastAPI', 'AI'])")
+    
+    # OPTIONAL FIELDS - Industry & Style
+    industry: Optional[str] = Field(None, description="Industry (IT, Finance, Healthcare, Marketing, etc.)")
+    tone_style: str = Field(default="ATS", description="Tone: Formal, Strong, ATS, Clean")
+    career_level: str = Field(default="Mid", description="Career level: Entry, Mid, Senior, Lead, Executive")
+    
+    # OPTIONAL FIELDS - Content Enhancement
+    achievements: Optional[List[str]] = Field(None, description="Key achievements to emphasize")
+    work_authorization: Optional[str] = Field(None, description="Work authorization status (e.g., 'US Citizen', 'H1B')")
+    additional_context: Optional[str] = Field(None, description="Additional context or special requirements")
+    
+    # OPTIONAL FIELDS - Format & AI
+    format_type: str = Field(default="ATS-Friendly", description="Format: Minimal, ATS-Friendly, Modern, Executive")
+    use_multi_agent: bool = Field(default=False, description="Use multi-agent system for 2x quality")
     enable_explanation: bool = Field(default=False, description="Include explanation of choices")
 
 

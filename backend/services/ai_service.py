@@ -1,6 +1,10 @@
 import os
 from typing import Optional
 from models.resume import ParsedResume, ResumeGenerationRequest
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # AI Service can be configured to use different providers
 AI_SERVICE_TYPE = os.getenv("AI_SERVICE", "demo")  # demo, claude, openai

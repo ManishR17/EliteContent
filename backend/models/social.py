@@ -3,17 +3,27 @@ from typing import List, Optional, Dict
 
 
 class SocialMediaRequest(BaseModel):
-    """Request model for social media content generation"""
-    platform: str = Field(..., description="Platform: twitter, linkedin, instagram, facebook")
-    content_type: str = Field(..., description="Type: post, thread, caption, story")
-    topic: str = Field(..., description="Topic or theme")
-    tone: str = Field(default="engaging", description="Tone: professional, casual, humorous, inspirational")
-    include_hashtags: bool = Field(default=True, description="Include hashtags")
-    include_emoji: bool = Field(default=True, description="Include emojis")
-    target_audience: Optional[str] = Field(None, description="Target audience")
-    call_to_action: Optional[str] = Field(None, description="Call to action")
-    use_multi_agent: bool = Field(default=False, description="Use multi-agent system")
-    enable_explanation: bool = Field(default=False, description="Include explanation")
+    """Request model for social media content generation with comprehensive inputs"""
+    
+    # REQUIRED FIELDS
+    platform: str = Field(..., description="Platform: LinkedIn, Twitter, Instagram, Facebook")
+    topic: str = Field(..., description="Topic or theme of the post")
+    key_message: str = Field(..., description="Main message to convey")
+    
+    # OPTIONAL FIELDS - Content Type & Style
+    content_type: str = Field(default="post", description="Type: post, thread, caption, story")
+    tone: str = Field(default="Professional", description="Tone: Motivational, Educational, Funny, Serious, Professional")
+    length: str = Field(default="Medium", description="Length: Short, Medium, Long")
+    
+    # OPTIONAL FIELDS - Audience & Engagement
+    target_audience: Optional[str] = Field(None, description="Target audience (e.g., 'Professionals', 'Students', 'Customers')")
+    include_hashtags: bool = Field(default=True, description="Include relevant hashtags")
+    include_emoji: bool = Field(default=True, description="Include emojis for engagement")
+    call_to_action: Optional[str] = Field(None, description="Call to action (e.g., 'Comment below', 'Share your thoughts')")
+    
+    # OPTIONAL FIELDS - AI Enhancement
+    use_multi_agent: bool = Field(default=False, description="Use multi-agent system for 2x quality")
+    enable_explanation: bool = Field(default=False, description="Include explanation of strategy")
 
 
 class SocialMediaResponse(BaseModel):

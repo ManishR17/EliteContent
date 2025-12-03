@@ -49,33 +49,51 @@ async def _generate_creative_content(request: CreativeRequest) -> tuple:
     if ai_service.service_type == "demo":
         return _generate_demo_creative(request)
     
-    # Build AI prompt
+    # Build comprehensive AI prompt using all enhanced fields
     keywords_text = ", ".join(request.keywords) if request.keywords else "N/A"
+    characters_text = ", ".join(request.main_characters) if request.main_characters else "N/A"
     
     length_guide = {
-        "short": "500-800 words",
-        "medium": "1000-1500 words",
-        "long": "2000-3000 words"
+        "Short": "500-800 words",
+        "Medium": "1000-1500 words",
+        "Long": "2000-3000 words"
     }
     
     prompt = f"""Generate creative {request.content_type} content.
 
-**Details:**
-- Topic: {request.topic}
-- Style: {request.style}
-- Tone: {request.tone}
+**Content Details:**
+- Content Type: {request.content_type}
+- Topic/Premise: {request.topic}
 - Target Audience: {request.target_audience}
+- Genre: {request.genre or 'Not specified'}
+
+**Creative Elements:**
+- Main Characters: {characters_text}
+- Plot Idea: {request.plot_idea or 'Develop organically'}
+- Setting: {request.setting or 'Choose appropriate setting'}
+
+**Style & Tone:**
+- Writing Style: {request.writing_style}
+- Tone: {request.tone}
 - Length: {length_guide.get(request.length, 'medium length')}
-- Keywords to include: {keywords_text}
+- Dialogue Heavy: {'Yes - include substantial dialogue' if request.dialogue_heavy else 'No - focus on narrative'}
+
+**SEO & Keywords:**
+- Keywords to incorporate: {keywords_text}
 
 **Instructions:**
 1. Create an engaging, attention-grabbing title
-2. Write compelling {request.content_type} content matching {request.style} style
+2. Write compelling {request.content_type} content in {request.writing_style} style
 3. Use {request.tone} tone throughout
-4. Target {request.target_audience} audience
-5. Naturally incorporate keywords: {keywords_text}
-6. Make it creative and original
-7. Include relevant hooks and pacing
+4. Target {request.target_audience} audience specifically
+5. Incorporate the genre: {request.genre or 'appropriate genre'}
+6. {'Include substantial dialogue between characters' if request.dialogue_heavy else 'Focus on narrative and description'}
+7. Naturally weave in keywords: {keywords_text}
+8. {'Develop these characters: ' + characters_text if request.main_characters else 'Create compelling characters'}
+9. {'Follow this plot idea: ' + request.plot_idea if request.plot_idea else 'Develop an engaging plot'}
+10. {'Set in: ' + request.setting if request.setting else 'Choose an appropriate setting'}
+11. Make it creative, original, and captivating
+12. Target length: {length_guide.get(request.length, '1000-1500 words')}
 
 Output format:
 TITLE: [creative title]
@@ -83,7 +101,7 @@ TITLE: [creative title]
 CONTENT:
 [full content]
 
-Generate only the title and content, no explanations."""
+Generate only the title and content, no explanations or meta-commentary."""
 
     # Generate with AI
     if ai_service.service_type == "claude":

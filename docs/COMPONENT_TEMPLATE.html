@@ -1,0 +1,92 @@
+<!-- TEMPLATE: Use this as a starting point for new feature components -->
+<!-- DO NOT modify the class names - they are part of the design system -->
+
+<div class="page-container">
+    <div class="content-card fade-in">
+        <!-- Header Section -->
+        <div class="section-header">Feature Name</div>
+        <p class="section-subheader">Brief description of what this feature does</p>
+
+        <!-- Two Column Layout -->
+        <div class="grid-2col">
+
+            <!-- Left Column: Input Form -->
+            <div>
+                <h3 style="color: #fff; margin-bottom: 1.5rem;">Input</h3>
+
+                <!-- Text Input Example -->
+                <div class="form-group">
+                    <label class="form-label">Input Field</label>
+                    <input type="text" class="form-input" [(ngModel)]="inputField" placeholder="Enter text here">
+                </div>
+
+                <!-- Select Dropdown Example -->
+                <div class="form-group">
+                    <label class="form-label">Select Option</label>
+                    <select class="form-select" [(ngModel)]="selectField">
+                        <option *ngFor="let opt of options" [value]="opt.value">
+                            {{ opt.label }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Textarea Example -->
+                <div class="form-group">
+                    <label class="form-label">Additional Details</label>
+                    <textarea class="form-textarea" [(ngModel)]="inputField"
+                        placeholder="Enter additional details..."></textarea>
+                </div>
+
+                <!-- Error Message -->
+                <div *ngIf="error" class="error-message">
+                    {{ error }}
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-4">
+                    <button class="btn-primary" (click)="generateContent()" [disabled]="isLoading">
+                        <span *ngIf="!isLoading">Generate</span>
+                        <span *ngIf="isLoading" class="spinner"></span>
+                    </button>
+
+                    <button class="btn-secondary" (click)="reset()">
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column: Output Preview -->
+            <div>
+                <h3 style="color: #fff; margin-bottom: 1.5rem;">Output</h3>
+
+                <!-- Loading State -->
+                <div *ngIf="isLoading" class="content-card" style="position: relative; min-height: 300px;">
+                    <div class="loading-overlay">
+                        <div class="spinner" style="width: 40px; height: 40px;"></div>
+                    </div>
+                </div>
+
+                <!-- Result Display -->
+                <div *ngIf="result && !isLoading" class="content-card slide-in">
+                    <div style="white-space: pre-wrap; color: #fff; line-height: 1.6;">
+                        {{ result.content }}
+                    </div>
+
+                    <div class="flex gap-4 mt-6">
+                        <button class="btn-secondary" (click)="copyToClipboard()">
+                            Copy to Clipboard
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div *ngIf="!result && !isLoading" class="content-card">
+                    <p class="text-muted text-center">
+                        Your generated content will appear here
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

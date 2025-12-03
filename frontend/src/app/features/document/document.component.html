@@ -7,21 +7,32 @@
     <div class="content-grid">
         <!-- Input Panel -->
         <div class="input-panel">
+            <!-- REQUIRED FIELDS -->
             <div class="form-section">
                 <h3><span class="step-number">1</span> Document Details</h3>
+
                 <div class="form-group">
-                    <label>Document Type</label>
+                    <label class="form-label">Document Type *</label>
                     <select [(ngModel)]="documentType" class="form-select">
                         <option *ngFor="let type of documentTypes" [value]="type.value">{{ type.label }}</option>
                     </select>
                 </div>
+
                 <div class="form-group">
-                    <label>Topic / Subject</label>
-                    <input type="text" [(ngModel)]="topic" placeholder="e.g., Q4 Marketing Strategy" class="form-input">
+                    <label class="form-label">Document Title *</label>
+                    <input type="text" [(ngModel)]="documentTitle" placeholder="e.g., Q4 Marketing Strategy"
+                        class="form-input">
                 </div>
+
                 <div class="form-group">
-                    <label>Target Audience</label>
-                    <input type="text" [(ngModel)]="targetAudience" placeholder="e.g., Executive Team"
+                    <label class="form-label">Purpose *</label>
+                    <input type="text" [(ngModel)]="purpose" placeholder="e.g., Secure funding for new project"
+                        class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Target Audience *</label>
+                    <input type="text" [(ngModel)]="targetAudience" placeholder="e.g., Executive Team, Investors"
                         class="form-input">
                 </div>
             </div>
@@ -29,31 +40,57 @@
             <div class="form-section">
                 <h3><span class="step-number">2</span> Key Content</h3>
                 <div class="form-group">
-                    <label>Key Points (one per line)</label>
-                    <textarea [(ngModel)]="keyPoints" rows="6" class="form-textarea"
-                        placeholder="- Focus on social media growth&#10;- Increase budget by 15%&#10;- Launch new influencer campaign"></textarea>
+                    <label class="form-label">Key Points * (One per line or comma-separated)</label>
+                    <textarea [(ngModel)]="keyPointsInput" rows="4" class="form-textarea" placeholder="- Executive summary
+- Market analysis
+- Financial projections"></textarea>
                 </div>
             </div>
 
+            <!-- OPTIONAL FIELDS -->
             <div class="form-section">
-                <h3><span class="step-number">3</span> Preferences</h3>
-                <div class="form-row">
+                <details>
+                    <summary>Optional Settings & Preferences</summary>
+
+                    <div class="grid-2col mt-4">
+                        <div class="form-group">
+                            <label class="form-label">Tone Style</label>
+                            <select [(ngModel)]="toneStyle" class="form-select">
+                                <option *ngFor="let tone of toneStyles" [value]="tone">{{ tone }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Length</label>
+                            <select [(ngModel)]="length" class="form-select">
+                                <option *ngFor="let l of lengths" [value]="l">{{ l }}</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="form-group">
-                        <label>Tone</label>
-                        <select [(ngModel)]="tone" class="form-select">
-                            <option *ngFor="let t of tones" [value]="t.value">{{ t.label }}</option>
+                        <label class="form-label">Formatting Preference</label>
+                        <select [(ngModel)]="formattingPreference" class="form-select">
+                            <option *ngFor="let format of formattingPreferences" [value]="format">{{ format }}</option>
                         </select>
                     </div>
+
                     <div class="form-group">
-                        <label>Length</label>
-                        <select [(ngModel)]="length" class="form-select">
-                            <option *ngFor="let l of lengths" [value]="l.value">{{ l.label }}</option>
-                        </select>
+                        <label class="form-label">Attachments Description</label>
+                        <textarea [(ngModel)]="attachmentsDescription" rows="2"
+                            placeholder="Describe any attachments..." class="form-textarea"></textarea>
                     </div>
-                </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Additional Context</label>
+                        <textarea [(ngModel)]="context" rows="3" placeholder="Any other details..."
+                            class="form-textarea"></textarea>
+                    </div>
+                </details>
             </div>
 
-            <button (click)="generateDocument()" [disabled]="!topic || !keyPoints || isLoading" class="generate-btn">
+            <button (click)="generateDocument()"
+                [disabled]="!documentTitle || !purpose || keyPoints.length === 0 || isLoading" class="generate-btn">
                 <span *ngIf="!isLoading">🚀 Generate Document</span>
                 <span *ngIf="isLoading" class="loading-spinner">⏳ Generating...</span>
             </button>

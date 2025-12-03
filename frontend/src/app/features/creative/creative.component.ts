@@ -11,9 +11,24 @@ import { ApiService } from '../../core/services/api.service';
     styleUrls: ['./creative.component.css']
 })
 export class CreativeComponent {
+    // Required Fields
     contentType: string = 'story';
     topic: string = '';
-    tone: string = 'suspenseful';
+    targetAudience: string = '';
+
+    // Optional Fields
+    genre: string = '';
+    mainCharactersInput: string = '';
+    mainCharacters: string[] = [];
+    plotIdea: string = '';
+    setting: string = '';
+    writingStyle: string = 'Descriptive';
+    tone: string = 'Suspenseful';
+    length: string = 'Medium';
+    dialogueHeavy: boolean = false;
+    keywordsInput: string = '';
+    keywords: string[] = [];
+
     isLoading: boolean = false;
     result: any = null;
     error: string = '';
@@ -22,7 +37,9 @@ export class CreativeComponent {
         { value: 'story', label: 'Short Story' },
         { value: 'script', label: 'Script/Screenplay' },
         { value: 'chapter', label: 'Novel Chapter' },
-        { value: 'poem', label: 'Poem' }
+        { value: 'poem', label: 'Poem' },
+        { value: 'blog', label: 'Creative Blog' },
+        { value: 'lyrics', label: 'Song Lyrics' }
     ];
 
     genres = [
@@ -37,30 +54,45 @@ export class CreativeComponent {
     ];
 
     tones = [
-        { value: 'suspenseful', label: 'Suspenseful' },
-        { value: 'humorous', label: 'Humorous' },
-        { value: 'dark', label: 'Dark/Gritty' },
-        { value: 'lighthearted', label: 'Lighthearted' },
-        { value: 'dramatic', label: 'Dramatic' },
-        { value: 'mysterious', label: 'Mysterious' }
+        { value: 'Suspenseful', label: 'Suspenseful' },
+        { value: 'Humorous', label: 'Humorous' },
+        { value: 'Dark', label: 'Dark/Gritty' },
+        { value: 'Lighthearted', label: 'Lighthearted' },
+        { value: 'Dramatic', label: 'Dramatic' },
+        { value: 'Mysterious', label: 'Mysterious' },
+        { value: 'Inspirational', label: 'Inspirational' }
     ];
 
-    povs = [
-        { value: 'first', label: 'First Person (I)' },
-        { value: 'second', label: 'Second Person (You)' },
-        { value: 'third_limited', label: 'Third Person Limited' },
-        { value: 'third_omni', label: 'Third Person Omniscient' }
-    ];
-
-    creativityLevel: string = 'medium';
-    targetAudience: string = '';
-    additionalInstructions: string = '';
+    writingStyles = ['Descriptive', 'Minimalist', 'Flowery', 'Fast-paced', 'Dialogue-driven'];
+    lengths = ['Short', 'Medium', 'Long'];
 
     constructor(private apiService: ApiService) { }
 
+    addCharacter() {
+        if (this.mainCharactersInput.trim()) {
+            this.mainCharacters.push(this.mainCharactersInput.trim());
+            this.mainCharactersInput = '';
+        }
+    }
+
+    removeCharacter(index: number) {
+        this.mainCharacters.splice(index, 1);
+    }
+
+    addKeyword() {
+        if (this.keywordsInput.trim()) {
+            this.keywords.push(this.keywordsInput.trim());
+            this.keywordsInput = '';
+        }
+    }
+
+    removeKeyword(index: number) {
+        this.keywords.splice(index, 1);
+    }
+
     generateContent() {
-        if (!this.topic) {
-            this.error = 'Please enter a topic.';
+        if (!this.topic || !this.targetAudience) {
+            this.error = 'Please enter a topic and target audience.';
             return;
         }
 
@@ -68,14 +100,31 @@ export class CreativeComponent {
         this.error = '';
         this.result = null;
 
+        // Parse main characters from textarea (comma or newline separated)
+        const mainCharacters = this.mainCharactersInput
+            .split(/[,\n]/)
+            .map(char => char.trim())
+            .filter(char => char.length > 0);
+
+        // Parse keywords from textarea (comma or newline separated)
+        const keywords = this.keywordsInput
+            .split(/[,\n]/)
+            .map(kw => kw.trim())
+            .filter(kw => kw.length > 0);
+
         const data = {
             content_type: this.contentType,
             topic: this.topic,
-            style: this.creativityLevel, // Mapping creativity level to style
-            target_audience: this.targetAudience || 'General Audience',
-            length: 'medium', // Default length
+            target_audience: this.targetAudience,
+            genre: this.genre || undefined,
+            main_characters: mainCharacters.length > 0 ? mainCharacters : undefined,
+            plot_idea: this.plotIdea || undefined,
+            setting: this.setting || undefined,
+            writing_style: this.writingStyle,
             tone: this.tone,
-            keywords: this.additionalInstructions ? [this.additionalInstructions] : []
+            length: this.length,
+            dialogue_heavy: this.dialogueHeavy,
+            keywords: keywords.length > 0 ? keywords : undefined
         };
 
         this.apiService.generateCreative(data).subscribe({

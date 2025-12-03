@@ -56,30 +56,41 @@ async def _generate_social_content(request: SocialMediaRequest) -> str:
     if ai_service.service_type == "demo":
         return _generate_demo_social(request)
     
-    # Build AI prompt
+    # Build comprehensive AI prompt using all enhanced fields
     emoji_instruction = "Include relevant emojis" if request.include_emoji else "Do not use emojis"
     hashtag_instruction = "Include relevant hashtags" if request.include_hashtags else "Do not use hashtags"
     
     prompt = f"""Generate {request.platform} {request.content_type} content.
 
-**Details:**
+**Content Details:**
+- Platform: {request.platform}
+- Content Type: {request.content_type}
 - Topic: {request.topic}
+- Key Message: {request.key_message}
 - Tone: {request.tone}
+- Length: {request.length}
+
+**Audience & Engagement:**
 - Target Audience: {request.target_audience or 'General audience'}
+- Call to Action: {request.call_to_action or 'Engage with the content'}
 
-**Platform:** {request.platform}
-**Character Limit:** {get_platform_character_limit(request.platform)} characters
+**Platform Constraints:**
+- Character Limit: {get_platform_character_limit(request.platform)} characters
+- Best Practices: Optimize for {request.platform} algorithm and user behavior
 
-**Requirements:**
+**Style Requirements:**
 1. {emoji_instruction}
 2. {hashtag_instruction}
-3. Match {request.tone} tone
-4. Optimize for {request.platform} best practices
-5. Include call-to-action: {request.call_to_action or 'Engage with the content'}
-6. Stay within character limit
-7. Make it engaging and shareable
+3. Match {request.tone} tone throughout
+4. Target {request.length} length
+5. Ensure the key message is clear: {request.key_message}
+6. Write for {request.target_audience or 'general audience'}
+7. Include the call to action: {request.call_to_action or 'standard engagement'}
+8. Stay within character limit
+9. Make it engaging, shareable, and platform-optimized
+10. Use hooks and formatting appropriate for {request.platform}
 
-Generate ONLY the post content, no explanations."""
+Generate ONLY the post content, no explanations or meta-commentary."""
 
     # Generate with AI  
     if ai_service.service_type == "claude":

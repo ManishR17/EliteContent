@@ -11,42 +11,52 @@ import { ApiService } from '../../core/services/api.service';
     styleUrls: ['./email.component.css']
 })
 export class EmailComponent {
-    emailType: string = 'professional';
-    recipient: string = '';
-    purpose: string = '';
-    subject: string = '';
-    keyPoints: string = '';
-    tone: string = 'professional';
-    length: string = 'medium';
+    // Required Fields
+    emailPurpose: string = '';
+    recipientType: string = '';
+    keyPointsInput: string = '';
+    keyPoints: string[] = [];
+
+    // Optional Fields
+    toneStyle: string = 'Professional';
+    urgencyLevel: string = 'Normal';
+    callToAction: string = '';
+    signatureDetails: string = '';
+    subjectLinePreference: string = '';
+    context: string = '';
+
     isLoading: boolean = false;
     result: any = null;
     error: string = '';
 
-    emailTypes = [
-        { value: 'professional', label: 'Professional Email' },
-        { value: 'cold_outreach', label: 'Cold Outreach' },
-        { value: 'follow_up', label: 'Follow-up Email' },
-        { value: 'thank_you', label: 'Thank You Email' },
-        { value: 'introduction', label: 'Introduction Email' },
-        { value: 'newsletter', label: 'Newsletter' },
-        { value: 'sales', label: 'Sales Email' },
-        { value: 'apology', label: 'Apology Email' }
+    recipientTypes = [
+        { value: 'hiring_manager', label: 'Hiring Manager' },
+        { value: 'colleague', label: 'Colleague' },
+        { value: 'client', label: 'Client' },
+        { value: 'executive', label: 'Executive' },
+        { value: 'team', label: 'Team' },
+        { value: 'investor', label: 'Investor' }
     ];
 
-    tones = [
-        { value: 'professional', label: 'Professional' },
-        { value: 'friendly', label: 'Friendly' },
-        { value: 'formal', label: 'Formal' },
-        { value: 'casual', label: 'Casual' },
-        { value: 'persuasive', label: 'Persuasive' },
-        { value: 'apologetic', label: 'Apologetic' }
-    ];
+    toneStyles = ['Professional', 'Friendly', 'Formal', 'Direct', 'Empathetic'];
+    urgencyLevels = ['Low', 'Normal', 'High', 'Critical'];
 
     constructor(private apiService: ApiService) { }
 
+    addKeyPoint() {
+        if (this.keyPointsInput.trim()) {
+            this.keyPoints.push(this.keyPointsInput.trim());
+            this.keyPointsInput = '';
+        }
+    }
+
+    removeKeyPoint(index: number) {
+        this.keyPoints.splice(index, 1);
+    }
+
     generateEmail() {
-        if (!this.purpose.trim() || !this.keyPoints.trim()) {
-            this.error = 'Please enter a purpose and key points';
+        if (!this.emailPurpose || !this.recipientType || !this.keyPointsInput.trim()) {
+            this.error = 'Please fill in all required fields.';
             return;
         }
 
@@ -54,14 +64,22 @@ export class EmailComponent {
         this.error = '';
         this.result = null;
 
-        const keyPointsArray = this.keyPoints.split('\n').filter(point => point.trim());
+        // Parse key points from textarea (comma or newline separated)
+        const keyPoints = this.keyPointsInput
+            .split(/[,\n]/)
+            .map(point => point.trim())
+            .filter(point => point.length > 0);
 
         const data = {
-            email_type: this.emailType,
-            recipient: this.recipient,
-            purpose: this.purpose,
-            key_points: keyPointsArray,
-            tone: this.tone
+            email_purpose: this.emailPurpose,
+            recipient_type: this.recipientType,
+            key_points: keyPoints,
+            tone_style: this.toneStyle,
+            urgency_level: this.urgencyLevel,
+            call_to_action: this.callToAction || undefined,
+            signature_details: this.signatureDetails || undefined,
+            subject_line_preference: this.subjectLinePreference || undefined,
+            context: this.context || undefined
         };
 
         this.apiService.generateEmail(data).subscribe({
@@ -84,12 +102,16 @@ export class EmailComponent {
     }
 
     reset() {
-        this.emailType = 'professional';
-        this.recipient = '';
-        this.subject = '';
-        this.keyPoints = '';
-        this.tone = 'professional';
-        this.length = 'medium';
+        this.emailPurpose = '';
+        this.recipientType = '';
+        this.keyPointsInput = '';
+        this.keyPoints = [];
+        this.toneStyle = 'Professional';
+        this.urgencyLevel = 'Normal';
+        this.callToAction = '';
+        this.signatureDetails = '';
+        this.subjectLinePreference = '';
+        this.context = '';
         this.result = null;
         this.error = '';
     }
