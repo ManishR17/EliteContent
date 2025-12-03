@@ -11,12 +11,21 @@ import { ApiService } from '../../core/services/api.service';
     styleUrls: ['./document.component.css']
 })
 export class DocumentComponent {
+    // Required Fields
     documentType: string = 'proposal';
-    topic: string = '';
+    documentTitle: string = '';
+    purpose: string = '';
     targetAudience: string = '';
-    keyPoints: string = '';
-    tone: string = 'professional';
-    length: string = 'medium';
+    keyPointsInput: string = '';
+    keyPoints: string[] = [];
+
+    // Optional Fields
+    toneStyle: string = 'Formal';
+    length: string = 'Medium';
+    formattingPreference: string = 'Corporate';
+    attachmentsDescription: string = '';
+    context: string = '';
+
     isLoading: boolean = false;
     result: any = null;
     error: string = '';
@@ -25,28 +34,30 @@ export class DocumentComponent {
         { value: 'proposal', label: 'Business Proposal' },
         { value: 'report', label: 'Report' },
         { value: 'memo', label: 'Memo' },
-        { value: 'letter', label: 'Business Letter' },
-        { value: 'whitepaper', label: 'White Paper' }
+        { value: 'cover_letter', label: 'Cover Letter' },
+        { value: 'business_plan', label: 'Business Plan' }
     ];
 
-    tones = [
-        { value: 'professional', label: 'Professional' },
-        { value: 'formal', label: 'Formal' },
-        { value: 'casual', label: 'Casual' },
-        { value: 'persuasive', label: 'Persuasive' }
-    ];
-
-    lengths = [
-        { value: 'short', label: 'Short (500-1000 words)' },
-        { value: 'medium', label: 'Medium (1000-2000 words)' },
-        { value: 'long', label: 'Long (2000-3000 words)' }
-    ];
+    toneStyles = ['Formal', 'Friendly', 'Technical', 'Persuasive'];
+    lengths = ['Short', 'Medium', 'Long'];
+    formattingPreferences = ['Simple', 'Corporate', 'Detailed'];
 
     constructor(private apiService: ApiService) { }
 
+    addKeyPoint() {
+        if (this.keyPointsInput.trim()) {
+            this.keyPoints.push(this.keyPointsInput.trim());
+            this.keyPointsInput = '';
+        }
+    }
+
+    removeKeyPoint(index: number) {
+        this.keyPoints.splice(index, 1);
+    }
+
     generateDocument() {
-        if (!this.topic || !this.keyPoints) {
-            this.error = 'Please enter a topic and key points.';
+        if (!this.documentTitle || !this.purpose || !this.keyPointsInput.trim()) {
+            this.error = 'Please fill in all required fields.';
             return;
         }
 
@@ -54,15 +65,23 @@ export class DocumentComponent {
         this.error = '';
         this.result = null;
 
-        const keyPointsArray = this.keyPoints.split('\n').filter(point => point.trim());
+        // Parse key points from textarea (comma or newline separated)
+        const keyPoints = this.keyPointsInput
+            .split(/[,\n]/)
+            .map(point => point.trim())
+            .filter(point => point.length > 0);
 
         const data = {
             document_type: this.documentType,
-            topic: this.topic,
-            target_audience: this.targetAudience || 'General Audience',
-            key_points: keyPointsArray,
-            tone: this.tone,
-            length: this.length
+            document_title: this.documentTitle,
+            purpose: this.purpose,
+            target_audience: this.targetAudience,
+            key_points: keyPoints,
+            tone_style: this.toneStyle,
+            length: this.length,
+            formatting_preference: this.formattingPreference,
+            attachments_description: this.attachmentsDescription || undefined,
+            context: this.context || undefined
         };
 
         this.apiService.generateDocument(data).subscribe({
@@ -81,7 +100,7 @@ export class DocumentComponent {
     downloadDocument() {
         if (!this.result) return;
 
-        let content = `Title: ${this.topic}\n\n`;
+        let content = `Title: ${this.documentTitle}\n\n`;
         this.result.sections.forEach((section: any) => {
             content += `${section.title}\n${section.content}\n\n`;
         });
@@ -90,7 +109,7 @@ export class DocumentComponent {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${this.topic.replace(/\s+/g, '_')}_document.txt`;
+        a.download = `${this.documentTitle.replace(/\s+/g, '_')}_document.txt`;
         a.click();
         window.URL.revokeObjectURL(url);
     }

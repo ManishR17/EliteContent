@@ -47,30 +47,40 @@ async def _generate_document_content(request: DocumentRequest) -> str:
     if ai_service.service_type == "demo":
         return _generate_demo_document(request)
     
-    # Build AI prompt
+    # Build comprehensive AI prompt using all enhanced fields
     prompt = f"""Generate a professional {request.document_type.replace('_', ' ')} document.
 
-**Requirements:**
-- Topic: {request.topic}
+**Document Details:**
+- Title: {request.document_title}
+- Type: {request.document_type.replace('_', ' ')}
+- Purpose: {request.purpose}
 - Target Audience: {request.target_audience}
-- Tone: {request.tone}
+- Tone Style: {request.tone_style}
 - Length: {request.length}
+- Formatting Preference: {request.formatting_preference}
 
 **Key Points to Include:**
-{chr(10).join(f'- {point}' for point in request.key_points) if request.key_points else 'N/A'}
+{chr(10).join(f'- {point}' for point in request.key_points)}
 
 **Additional Context:**
-{request.context or 'N/A'}
+{request.context or 'None provided'}
+
+**Attachments Reference:**
+{request.attachments_description or 'No attachments'}
 
 **Instructions:**
-1. Use appropriate formatting for a {request.document_type.replace('_', ' ')}
-2. Match the {request.tone} tone throughout
-3. Write for {request.target_audience} audience
-4. Ensure the document is {request.length} length
-5. Include all key points naturally
-6. Use professional language and proper structure
+1. Create a well-structured {request.document_type.replace('_', ' ')} with clear sections
+2. Use {request.tone_style} tone throughout the document
+3. Write specifically for {request.target_audience} audience
+4. Target {request.length} length (Short: 1 page, Medium: 2-3 pages, Long: 5+ pages)
+5. Apply {request.formatting_preference} formatting style
+6. Incorporate all key points naturally and cohesively
+7. Ensure the document serves its stated purpose: {request.purpose}
+8. Use professional language appropriate for the document type
+9. Include proper headings, sections, and formatting
+10. Make it actionable and impactful
 
-Generate ONLY the document content, no explanations."""
+Generate ONLY the document content with proper formatting. No meta-commentary."""
 
     # Generate with AI
     if ai_service.service_type == "claude":
@@ -84,7 +94,7 @@ Generate ONLY the document content, no explanations."""
 def _generate_demo_document(request: DocumentRequest) -> str:
     """Generate demo document without AI"""
     
-    key_points_text = "\n".join(f"• {point}" for point in request.key_points) if request.key_points else "• Key achievement or qualification\n• Relevant experience\n• Value proposition"
+    key_points_text = "\n".join(f"• {point}" for point in request.key_points)
     
     templates = {
         "cover_letter": f"""[Your Name]
@@ -97,7 +107,9 @@ def _generate_demo_document(request: DocumentRequest) -> str:
 
 Dear Hiring Manager,
 
-I am writing to express my strong interest in the {request.topic}. With my background and passion for {request.target_audience}, I am confident in my ability to contribute significantly to your team.
+{request.document_title}
+
+I am writing to express my strong interest in this opportunity. {request.purpose}
 
 Throughout my career, I have developed expertise in:
 {key_points_text}
@@ -114,11 +126,13 @@ NOTE: This is a DEMO document. For AI-personalized content, add your API key to 
 
         "proposal": f"""BUSINESS PROPOSAL
 
-{request.topic.upper()}
+{request.document_title.upper()}
 
 EXECUTIVE SUMMARY
 
-This proposal outlines a comprehensive approach to {request.topic}, designed specifically for {request.target_audience}.
+{request.purpose}
+
+This proposal is designed specifically for {request.target_audience}.
 
 OBJECTIVES
 
@@ -136,6 +150,8 @@ DELIVERABLES
 
 {request.context or 'Additional details and timeline can be discussed during consultation.'}
 
+{request.attachments_description or ''}
+
 NEXT STEPS
 
 We look forward to discussing this proposal and addressing any questions you may have.
@@ -145,11 +161,13 @@ NOTE: This is a DEMO document. For AI-customized proposals, add your API key to 
 
         "report": f"""PROFESSIONAL REPORT
 
-Subject: {request.topic}
+{request.document_title}
 
 SUMMARY
 
-This report provides comprehensive analysis and insights on {request.topic} for {request.target_audience}.
+{request.purpose}
+
+This report is prepared for {request.target_audience}.
 
 KEY FINDINGS
 
@@ -157,13 +175,13 @@ KEY FINDINGS
 
 ANALYSIS
 
-Our investigation reveals important considerations that merit attention moving forward.
-
-{request.context or 'Detailed methodology and data sources are available upon request.'}
+{request.context or 'Our investigation reveals important considerations that merit attention moving forward.'}
 
 RECOMMENDATIONS
 
 Based on our findings, we recommend a strategic approach that addresses identified opportunities and challenges.
+
+{request.attachments_description or ''}
 
 CONCLUSION
 
@@ -177,9 +195,13 @@ NOTE: This is a DEMO document. For AI-tailored reports, add your API key to back
 TO: {request.target_audience}
 FROM: [Your Name]
 DATE: [Current Date]
-RE: {request.topic}
+RE: {request.document_title}
 
 PURPOSE
+
+{request.purpose}
+
+KEY POINTS
 
 {key_points_text}
 

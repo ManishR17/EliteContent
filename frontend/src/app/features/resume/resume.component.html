@@ -7,90 +7,97 @@
     <div class="content-grid">
         <!-- Input Panel -->
         <div class="input-panel">
+            <!-- REQUIRED FIELDS -->
             <div class="form-section">
-                <h3><span class="step-number">1</span> Upload Your Resume</h3>
-                <div class="file-upload-wrapper">
-                    <input type="file" id="resume-file" (change)="onFileSelected($event)" accept=".pdf,.docx"
-                        class="file-input">
-                    <label for="resume-file" class="file-label">
-                        <span class="upload-icon">📄</span>
-                        <span class="upload-text">
-                            {{ selectedFile ? selectedFile.name : 'Choose PDF or DOCX file' }}
-                        </span>
-                    </label>
+                <h3><span class="step-number">1</span> Job Details</h3>
+
+                <div class="form-group">
+                    <label class="form-label">Job Description *</label>
+                    <textarea [(ngModel)]="jobDescription" placeholder="Paste the complete job description here..."
+                        rows="6" class="form-textarea"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Target Job Title *</label>
+                    <input type="text" [(ngModel)]="targetJobTitle" placeholder="e.g., Senior Software Engineer"
+                        class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Years of Experience *</label>
+                    <input type="number" [(ngModel)]="yearsOfExperience" min="0" max="50" class="form-input">
                 </div>
             </div>
 
             <div class="form-section">
-                <h3><span class="step-number">2</span> Job Description</h3>
-                <textarea [(ngModel)]="jobDescription" placeholder="Paste the complete job description here..." rows="6"
-                    class="form-textarea"></textarea>
+                <h3><span class="step-number">2</span> Skills</h3>
+                <div class="form-group">
+                    <label class="form-label">Core Skills * (One per line or comma-separated)</label>
+                    <textarea [(ngModel)]="skillsInput" rows="4" class="form-textarea" placeholder="Python, JavaScript, React
+Project Management
+Data Analysis"></textarea>
+                </div>
             </div>
 
+            <!-- OPTIONAL FIELDS -->
             <div class="form-section">
-                <h3><span class="step-number">3</span> Target Details</h3>
-                <div class="form-row">
+                <details>
+                    <summary>Optional Settings & Preferences</summary>
+
+                    <div class="form-group mt-4">
+                        <label class="form-label">Industry</label>
+                        <select [(ngModel)]="industry" class="form-select">
+                            <option value="">Select Industry</option>
+                            <option *ngFor="let ind of industries" [value]="ind">{{ ind }}</option>
+                        </select>
+                    </div>
+
+                    <div class="grid-2col">
+                        <div class="form-group">
+                            <label class="form-label">Tone Style</label>
+                            <select [(ngModel)]="toneStyle" class="form-select">
+                                <option *ngFor="let tone of toneStyles" [value]="tone">{{ tone }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Career Level</label>
+                            <select [(ngModel)]="careerLevel" class="form-select">
+                                <option *ngFor="let level of careerLevels" [value]="level">{{ level }}</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="form-group">
-                        <label>Target Role / Job Title</label>
-                        <input type="text" [(ngModel)]="targetRole" placeholder="e.g., Senior Software Engineer"
+                        <label class="form-label">Key Achievements (One per line or comma-separated)</label>
+                        <textarea [(ngModel)]="achievementsInput" rows="3" class="form-textarea" placeholder="Increased sales by 40%
+Led team of 15 engineers
+Launched 3 successful products"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Work Authorization</label>
+                        <input type="text" [(ngModel)]="workAuthorization" placeholder="e.g., US Citizen, H1B"
                             class="form-input">
                     </div>
-                    <div class="form-group">
-                        <label>Experience Level</label>
-                        <select [(ngModel)]="experienceLevel" class="form-select">
-                            <option *ngFor="let level of experienceLevels" [value]="level">
-                                {{ level }}
-                            </option>
-                        </select>
-                    </div>
-                </div>
-            </div>
 
-            <div class="form-section">
-                <h3><span class="step-number">4</span> Skills to Highlight</h3>
-                <div class="skills-input-wrapper">
-                    <input type="text" [(ngModel)]="skillsInput" (keyup.enter)="addSkill()"
-                        placeholder="Type skills and press Enter (e.g., Python, React, AWS)" class="form-input">
-                    <button (click)="addSkill()" class="add-skill-btn" type="button">Add</button>
-                </div>
-                <div class="skills-tags" *ngIf="skillsToHighlight.length > 0">
-                    <span *ngFor="let skill of skillsToHighlight" class="skill-tag">
-                        {{ skill }}
-                        <button (click)="removeSkill(skill)" class="remove-skill">×</button>
-                    </span>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h3><span class="step-number">5</span> Preferences</h3>
-                <div class="form-row">
                     <div class="form-group">
-                        <label>Tone</label>
-                        <select [(ngModel)]="tonePreference" class="form-select">
-                            <option *ngFor="let tone of toneOptions" [value]="tone">
-                                {{ tone }}
-                            </option>
-                        </select>
+                        <label class="form-label">Additional Context</label>
+                        <textarea [(ngModel)]="additionalContext" rows="3" placeholder="Any other details..."
+                            class="form-textarea"></textarea>
                     </div>
+
                     <div class="form-group">
-                        <label>Format Style</label>
+                        <label class="form-label">Format Style</label>
                         <select [(ngModel)]="formatType" class="form-select">
-                            <option *ngFor="let format of formatOptions" [value]="format">
-                                {{ format }}
-                            </option>
+                            <option *ngFor="let format of formatOptions" [value]="format">{{ format }}</option>
                         </select>
                     </div>
-                </div>
+                </details>
             </div>
 
-            <div class="form-section">
-                <h3><span class="step-number">6</span> Additional Achievements (Optional)</h3>
-                <textarea [(ngModel)]="additionalAchievements"
-                    placeholder="Any additional achievements or accomplishments to emphasize..." rows="4"
-                    class="form-textarea"></textarea>
-            </div>
-
-            <button (click)="generateResume()" [disabled]="!selectedFile || !jobDescription || !targetRole || isLoading"
+            <button (click)="generateResume()"
+                [disabled]="!jobDescription || !targetJobTitle || coreSkills.length === 0 || isLoading"
                 class="generate-btn">
                 <span *ngIf="!isLoading">🚀 Generate Tailored Resume</span>
                 <span *ngIf="isLoading" class="loading-spinner">⏳ Generating...</span>

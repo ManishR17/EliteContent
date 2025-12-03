@@ -1,0 +1,36 @@
+/* Component-Specific Styles for New Feature */
+/* IMPORTANT: Only add styles here if they are UNIQUE to this component */
+/* For standard elements, use the classes from shared-styles.css */
+
+/* Example: Component-specific layout adjustments */
+.custom-grid {
+    /* Only if the standard grid-2col doesn't work */
+    display: grid;
+    grid-template-columns: 40% 60%;
+    gap: 2rem;
+}
+
+/* Example: Component-specific element styling */
+.special-preview {
+    /* Only if you need something beyond content-card */
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    /* Add your unique styles here */
+}
+
+/* REMINDER: Before adding styles here, check if you can use:
+ * - .page-container
+ * - .content-card
+ * - .grid-2col
+ * - .form-input, .form-select, .form-textarea
+ * - .btn-primary, .btn-secondary
+ * - .section-header, .section-subheader
+ * - .error-message, .success-message
+ * - .spinner, .loading-overlay
+ * - .fade-in, .slide-in
+ * 
+ * See DESIGN_SYSTEM.md for the complete list
+ */

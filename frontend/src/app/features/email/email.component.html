@@ -7,48 +7,84 @@
     <div class="content-grid">
         <!-- Input Panel -->
         <div class="input-panel">
+            <!-- REQUIRED FIELDS -->
             <div class="form-section">
                 <h3><span class="step-number">1</span> Email Context</h3>
+
                 <div class="form-group">
-                    <label>Email Type</label>
-                    <select [(ngModel)]="emailType" class="form-select">
-                        <option *ngFor="let type of emailTypes" [value]="type.value">{{ type.label }}</option>
-                    </select>
+                    <label class="form-label">Email Purpose *</label>
+                    <input type="text" [(ngModel)]="emailPurpose" placeholder="e.g., Follow up on interview"
+                        class="form-input">
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Recipient Name/Role</label>
-                        <input type="text" [(ngModel)]="recipient" placeholder="e.g., Hiring Manager"
-                            class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label>Purpose</label>
-                        <input type="text" [(ngModel)]="purpose" placeholder="e.g., Follow up on interview"
-                            class="form-input">
-                    </div>
+
+                <div class="form-group">
+                    <label class="form-label">Recipient Type *</label>
+                    <select [(ngModel)]="recipientType" class="form-select">
+                        <option value="">Select Recipient Type</option>
+                        <option *ngFor="let type of recipientTypes" [value]="type.value">{{ type.label }}</option>
+                    </select>
                 </div>
             </div>
 
             <div class="form-section">
                 <h3><span class="step-number">2</span> Key Details</h3>
                 <div class="form-group">
-                    <label>Key Points to Include</label>
-                    <textarea [(ngModel)]="keyPoints" rows="5" class="form-textarea"
-                        placeholder="- Thank them for their time&#10;- Reiterate interest in the role&#10;- Ask about next steps"></textarea>
+                    <label class="form-label">Key Points * (One per line or comma-separated)</label>
+                    <textarea [(ngModel)]="keyPointsInput" rows="4" class="form-textarea" placeholder="- Thank them for their time
+- Reiterate interest in the role
+- Ask about next steps"></textarea>
                 </div>
             </div>
 
+            <!-- OPTIONAL FIELDS -->
             <div class="form-section">
-                <h3><span class="step-number">3</span> Style</h3>
-                <div class="form-group">
-                    <label>Tone</label>
-                    <select [(ngModel)]="tone" class="form-select">
-                        <option *ngFor="let t of tones" [value]="t.value">{{ t.label }}</option>
-                    </select>
-                </div>
+                <details>
+                    <summary>Optional Settings & Preferences</summary>
+
+                    <div class="grid-2col mt-4">
+                        <div class="form-group">
+                            <label class="form-label">Tone Style</label>
+                            <select [(ngModel)]="toneStyle" class="form-select">
+                                <option *ngFor="let tone of toneStyles" [value]="tone">{{ tone }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Urgency Level</label>
+                            <select [(ngModel)]="urgencyLevel" class="form-select">
+                                <option *ngFor="let level of urgencyLevels" [value]="level">{{ level }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Call to Action</label>
+                        <input type="text" [(ngModel)]="callToAction" placeholder="e.g., Schedule a meeting"
+                            class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Signature Details</label>
+                        <input type="text" [(ngModel)]="signatureDetails" placeholder="e.g., Name, Title, Phone"
+                            class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Subject Line Preference</label>
+                        <input type="text" [(ngModel)]="subjectLinePreference" placeholder="e.g., Catchy and short"
+                            class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Additional Context</label>
+                        <textarea [(ngModel)]="context" rows="3" placeholder="Any other details..."
+                            class="form-textarea"></textarea>
+                    </div>
+                </details>
             </div>
 
-            <button (click)="generateEmail()" [disabled]="!recipient || !purpose || !keyPoints || isLoading"
+            <button (click)="generateEmail()"
+                [disabled]="!emailPurpose || !recipientType || !keyPointsInput.trim() || isLoading"
                 class="generate-btn">
                 <span *ngIf="!isLoading">🚀 Generate Email</span>
                 <span *ngIf="isLoading" class="loading-spinner">⏳ Generating...</span>

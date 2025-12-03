@@ -7,55 +7,103 @@
     <div class="content-grid">
         <!-- Input Panel -->
         <div class="input-panel">
+            <!-- REQUIRED FIELDS -->
             <div class="form-section">
                 <h3><span class="step-number">1</span> Content Basics</h3>
                 <div class="form-group">
-                    <label>Content Type</label>
+                    <label class="form-label">Content Type *</label>
                     <select [(ngModel)]="contentType" class="form-select">
                         <option *ngFor="let type of contentTypes" [value]="type.value">{{ type.label }}</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Topic / Premise</label>
+                    <label class="form-label">Topic / Premise *</label>
                     <textarea [(ngModel)]="topic" rows="3" class="form-textarea"
                         placeholder="e.g., A sci-fi story about a robot learning to paint"></textarea>
                 </div>
-            </div>
-
-            <div class="form-section">
-                <h3><span class="step-number">2</span> Style & Tone</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Tone</label>
-                        <select [(ngModel)]="tone" class="form-select">
-                            <option *ngFor="let t of tones" [value]="t.value">{{ t.label }}</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Creativity Level</label>
-                        <select [(ngModel)]="creativityLevel" class="form-select">
-                            <option value="low">Conservative</option>
-                            <option value="medium">Balanced</option>
-                            <option value="high">Highly Creative</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h3><span class="step-number">3</span> Details</h3>
                 <div class="form-group">
-                    <label>Target Audience</label>
+                    <label class="form-label">Target Audience *</label>
                     <input type="text" [(ngModel)]="targetAudience" placeholder="e.g., Young Adults" class="form-input">
                 </div>
-                <div class="form-group">
-                    <label>Additional Instructions</label>
-                    <textarea [(ngModel)]="additionalInstructions" rows="3" class="form-textarea"
-                        placeholder="Any specific plot points, characters, or requirements?"></textarea>
-                </div>
             </div>
 
-            <button (click)="generateContent()" [disabled]="!topic || isLoading" class="generate-btn">
+            <!-- OPTIONAL FIELDS -->
+            <div class="form-section">
+                <details>
+                    <summary>Story Elements</summary>
+
+                    <div class="form-group mt-4">
+                        <label class="form-label">Genre</label>
+                        <select [(ngModel)]="genre" class="form-select">
+                            <option value="">Select Genre</option>
+                            <option *ngFor="let g of genres" [value]="g.value">{{ g.label }}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Main Characters (One per line or comma-separated)</label>
+                        <textarea [(ngModel)]="mainCharactersInput" rows="3" class="form-textarea" placeholder="Detective Sarah Chen
+Dr. Marcus Webb
+The mysterious stranger"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Plot Idea / Twist</label>
+                        <textarea [(ngModel)]="plotIdea" rows="2" class="form-textarea"
+                            placeholder="Any specific plot points?"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Setting</label>
+                        <input type="text" [(ngModel)]="setting" placeholder="e.g., Mars Colony, 2050"
+                            class="form-input">
+                    </div>
+                </details>
+            </div>
+
+            <div class="form-section">
+                <details>
+                    <summary>Style & Tone</summary>
+
+                    <div class="grid-2col mt-4">
+                        <div class="form-group">
+                            <label class="form-label">Writing Style</label>
+                            <select [(ngModel)]="writingStyle" class="form-select">
+                                <option *ngFor="let style of writingStyles" [value]="style">{{ style }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Tone</label>
+                            <select [(ngModel)]="tone" class="form-select">
+                                <option *ngFor="let t of tones" [value]="t.value">{{ t.label }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Length</label>
+                        <select [(ngModel)]="length" class="form-select">
+                            <option *ngFor="let l of lengths" [value]="l">{{ l }}</option>
+                        </select>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" [(ngModel)]="dialogueHeavy"> Dialogue Heavy
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Keywords / Themes (One per line or comma-separated)</label>
+                        <textarea [(ngModel)]="keywordsInput" rows="3" class="form-textarea"
+                            placeholder="redemption, sacrifice, hope"></textarea>
+                    </div>
+                </details>
+            </div>
+
+            <button (click)="generateContent()" [disabled]="!topic || !targetAudience || isLoading"
+                class="generate-btn">
                 <span *ngIf="!isLoading">🚀 Generate Content</span>
                 <span *ngIf="isLoading" class="loading-spinner">⏳ Weaving Magic...</span>
             </button>

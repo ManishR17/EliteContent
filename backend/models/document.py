@@ -3,16 +3,27 @@ from typing import List, Optional, Dict
 
 
 class DocumentRequest(BaseModel):
-    """Request model for document generation"""
-    document_type: str = Field(..., description="Type of document: cover_letter, proposal, report, memo, business_plan")
-    topic: str = Field(..., description="Main topic or subject of the document")
-    target_audience: str = Field(..., description="Intended audience")
-    tone: str = Field(default="formal", description="Tone: formal, casual, persuasive, technical")
-    key_points: List[str] = Field(default_factory=list, description="Key points to include")
-    length: str = Field(default="medium", description="Length: short (1 page), medium (2-3 pages), long (5+ pages)")
-    context: Optional[str] = Field(None, description="Additional context or background")
-    use_multi_agent: bool = Field(default=False, description="Use multi-agent system")
-    enable_explanation: bool = Field(default=False, description="Include explanation")
+    """Request model for document generation with comprehensive inputs"""
+    
+    # REQUIRED FIELDS
+    document_type: str = Field(..., description="Type: cover_letter, proposal, report, memo, business_plan")
+    document_title: str = Field(..., description="Document title or subject")
+    purpose: str = Field(..., description="Purpose of the document (e.g., 'Secure funding', 'Report Q4 results')")
+    target_audience: str = Field(..., description="Intended audience (e.g., 'Executive Team', 'Investors')")
+    key_points: List[str] = Field(..., description="Key points to include in the document")
+    
+    # OPTIONAL FIELDS - Style & Format
+    tone_style: str = Field(default="Formal", description="Tone: Formal, Friendly, Technical, Persuasive")
+    length: str = Field(default="Medium", description="Length: Short (1 page), Medium (2-3 pages), Long (5+ pages)")
+    formatting_preference: str = Field(default="Corporate", description="Format: Simple, Corporate, Detailed")
+    
+    # OPTIONAL FIELDS - Content Enhancement
+    attachments_description: Optional[str] = Field(None, description="Description of attachments (if any)")
+    context: Optional[str] = Field(None, description="Additional context or background information")
+    
+    # OPTIONAL FIELDS - AI Enhancement
+    use_multi_agent: bool = Field(default=False, description="Use multi-agent system for 2x quality")
+    enable_explanation: bool = Field(default=False, description="Include explanation of structure")
 
 
 class DocumentResponse(BaseModel):

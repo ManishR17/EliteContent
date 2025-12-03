@@ -11,18 +11,22 @@ import { ApiService } from '../../core/services/api.service';
     styleUrls: ['./resume.component.css']
 })
 export class ResumeComponent {
-    // File upload
-    selectedFile: File | null = null;
-
-    // Form fields
+    // Form fields - REQUIRED
     jobDescription: string = '';
-    targetRole: string = '';
-    experienceLevel: string = 'Mid-Level';
+    targetJobTitle: string = '';
+    yearsOfExperience: number = 0;
     skillsInput: string = '';
-    skillsToHighlight: string[] = [];
-    tonePreference: string = 'Professional';
+    coreSkills: string[] = [];
+
+    // Form fields - OPTIONAL
+    industry: string = '';
+    toneStyle: string = 'ATS';
+    careerLevel: string = 'Mid';
+    achievementsInput: string = '';
+    achievements: string[] = [];
+    workAuthorization: string = '';
+    additionalContext: string = '';
     formatType: string = 'ATS-Friendly';
-    additionalAchievements: string = '';
 
     // State
     isLoading: boolean = false;
@@ -30,51 +34,40 @@ export class ResumeComponent {
     error: string = '';
 
     // Options
-    experienceLevels = ['Entry Level', 'Mid-Level', 'Senior', 'Lead', 'Executive'];
-    toneOptions = ['Professional', 'Confident', 'Humble', 'Assertive', 'Balanced'];
+    industries = ['IT', 'Finance', 'Healthcare', 'Marketing', 'Education', 'Manufacturing', 'Retail', 'Other'];
+    toneStyles = ['Formal', 'Strong', 'ATS', 'Clean'];
+    careerLevels = ['Entry', 'Mid', 'Senior', 'Lead', 'Executive'];
     formatOptions = ['Minimal', 'ATS-Friendly', 'Modern', 'Executive'];
 
     constructor(private apiService: ApiService) { }
 
-    onFileSelected(event: any) {
-        const file = event.target.files[0];
-        if (file) {
-            // Validate file type
-            const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-            if (validTypes.includes(file.type) || file.name.endsWith('.pdf') || file.name.endsWith('.docx')) {
-                this.selectedFile = file;
-                this.error = '';
-            } else {
-                this.error = 'Please upload a PDF or DOCX file.';
-                this.selectedFile = null;
-            }
-        }
-    }
-
     addSkill() {
         if (this.skillsInput.trim()) {
             const skills = this.skillsInput.split(',').map(s => s.trim()).filter(s => s);
-            this.skillsToHighlight = [...new Set([...this.skillsToHighlight, ...skills])];
+            this.coreSkills = [...new Set([...this.coreSkills, ...skills])];
             this.skillsInput = '';
         }
     }
 
     removeSkill(skill: string) {
-        this.skillsToHighlight = this.skillsToHighlight.filter(s => s !== skill);
+        this.coreSkills = this.coreSkills.filter(s => s !== skill);
+    }
+
+    addAchievement() {
+        if (this.achievementsInput.trim()) {
+            this.achievements.push(this.achievementsInput.trim());
+            this.achievementsInput = '';
+        }
+    }
+
+    removeAchievement(index: number) {
+        this.achievements.splice(index, 1);
     }
 
     generateResume() {
         // Validation
-        if (!this.selectedFile) {
-            this.error = 'Please upload your resume (PDF or DOCX).';
-            return;
-        }
-        if (!this.jobDescription.trim()) {
-            this.error = 'Please enter the job description.';
-            return;
-        }
-        if (!this.targetRole.trim()) {
-            this.error = 'Please enter the target role/job title.';
+        if (!this.jobDescription || !this.targetJobTitle || !this.skillsInput.trim()) {
+            this.error = 'Please fill in all required fields.';
             return;
         }
 
@@ -82,16 +75,33 @@ export class ResumeComponent {
         this.error = '';
         this.result = null;
 
-        this.apiService.generateResume(
-            this.selectedFile,
-            this.jobDescription,
-            this.targetRole,
-            this.experienceLevel,
-            this.skillsToHighlight,
-            this.tonePreference,
-            this.formatType,
-            this.additionalAchievements || undefined
-        ).subscribe({
+        // Parse core skills from textarea (comma or newline separated)
+        const coreSkills = this.skillsInput
+            .split(/[,\n]/)
+            .map(skill => skill.trim())
+            .filter(skill => skill.length > 0);
+
+        // Parse achievements from textarea (comma or newline separated)
+        const achievements = this.achievementsInput
+            .split(/[,\n]/)
+            .map(ach => ach.trim())
+            .filter(ach => ach.length > 0);
+
+        const requestData = {
+            job_description: this.jobDescription,
+            target_job_title: this.targetJobTitle,
+            years_of_experience: this.yearsOfExperience,
+            core_skills: coreSkills,
+            industry: this.industry || undefined,
+            tone_style: this.toneStyle,
+            career_level: this.careerLevel,
+            achievements: achievements.length > 0 ? achievements : undefined,
+            work_authorization: this.workAuthorization || undefined,
+            additional_context: this.additionalContext || undefined,
+            format_type: this.formatType
+        };
+
+        this.apiService.generateResume(requestData).subscribe({
             next: (response) => {
                 this.result = response;
                 this.isLoading = false;
@@ -111,7 +121,7 @@ export class ResumeComponent {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `tailored_resume_${this.targetRole.replace(/\s+/g, '_')}.txt`;
+        a.download = `tailored_resume_${this.targetJobTitle.replace(/\s+/g, '_')}.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

@@ -7,52 +7,81 @@
     <div class="content-grid">
         <!-- Input Panel -->
         <div class="input-panel">
+            <!-- REQUIRED FIELDS -->
             <div class="form-section">
                 <h3><span class="step-number">1</span> Platform & Topic</h3>
                 <div class="form-group">
-                    <label>Platform</label>
+                    <label class="form-label">Platform *</label>
                     <select [(ngModel)]="platform" class="form-select">
                         <option *ngFor="let p of platforms" [value]="p.value">{{ p.label }}</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Topic / Content</label>
-                    <textarea [(ngModel)]="topic" rows="4" class="form-textarea"
-                        placeholder="What do you want to post about? e.g., Launching our new AI product feature"></textarea>
+                    <label class="form-label">Topic / Content *</label>
+                    <input type="text" [(ngModel)]="topic" placeholder="e.g., Launching new AI feature"
+                        class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Key Message *</label>
+                    <textarea [(ngModel)]="keyMessage" rows="3" class="form-textarea"
+                        placeholder="What is the main point you want to convey?"></textarea>
                 </div>
             </div>
 
+            <!-- OPTIONAL FIELDS -->
             <div class="form-section">
-                <h3><span class="step-number">2</span> Audience & Goal</h3>
-                <div class="form-row">
+                <details>
+                    <summary>Optional Settings & Preferences</summary>
+
+                    <div class="grid-2col mt-4">
+                        <div class="form-group">
+                            <label class="form-label">Target Audience</label>
+                            <input type="text" [(ngModel)]="targetAudience" placeholder="e.g., Tech enthusiasts"
+                                class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Tone Style</label>
+                            <select [(ngModel)]="tone" class="form-select">
+                                <option *ngFor="let t of tones" [value]="t.value">{{ t.label }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid-2col">
+                        <div class="form-group">
+                            <label class="form-label">Content Type</label>
+                            <select [(ngModel)]="contentType" class="form-select">
+                                <option *ngFor="let type of contentTypes" [value]="type.value">{{ type.label }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Length</label>
+                            <select [(ngModel)]="length" class="form-select">
+                                <option *ngFor="let l of lengths" [value]="l">{{ l }}</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="form-group">
-                        <label>Target Audience</label>
-                        <input type="text" [(ngModel)]="targetAudience" placeholder="e.g., Tech enthusiasts"
+                        <label class="form-label">Call to Action</label>
+                        <input type="text" [(ngModel)]="callToAction" placeholder="e.g., Link in bio"
                             class="form-input">
                     </div>
-                    <div class="form-group">
-                        <label>Tone</label>
-                        <select [(ngModel)]="tone" class="form-select">
-                            <option *ngFor="let t of tones" [value]="t.value">{{ t.label }}</option>
-                        </select>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" [(ngModel)]="includeHashtags"> Include Hashtags
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" [(ngModel)]="includeEmoji"> Use Emojis
+                        </label>
                     </div>
-                </div>
+                </details>
             </div>
 
-            <div class="form-section">
-                <h3><span class="step-number">3</span> Options</h3>
-                <div class="checkbox-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" [(ngModel)]="includeHashtags"> Include Hashtags
-                    </label>
-                    <label class="checkbox-label">
-                        <input type="checkbox" [(ngModel)]="includeEmojis"> Use Emojis
-                    </label>
-                </div>
-            </div>
-
-            <button (click)="generateContent()" [disabled]="!topic || !targetAudience || isLoading"
-                class="generate-btn">
+            <button (click)="generateContent()" [disabled]="!topic || !keyMessage || isLoading" class="generate-btn">
                 <span *ngIf="!isLoading">🚀 Generate Post</span>
                 <span *ngIf="isLoading" class="loading-spinner">⏳ Generating...</span>
             </button>

@@ -29,7 +29,7 @@ async def generate_email(request: EmailRequest):
         # Generate suggestions
         suggestions = _generate_suggestions(request, spam_score)
         
-        signature = _generate_signature()
+        signature = _generate_signature(request)
         
         return EmailResponse(
             subject=subject,
@@ -48,32 +48,42 @@ async def _generate_email_content(request: EmailRequest) -> tuple:
     if ai_service.service_type == "demo":
         return _generate_demo_email(request)
     
-    # Build AI prompt
-    key_points_text = "\n".join(f'- {point}' for point in request.key_points) if request.key_points else 'N/A'
+    # Build comprehensive AI prompt using all enhanced fields
+    key_points_text = "\n".join(f'- {point}' for point in request.key_points)
     
-    prompt = f"""Generate a {request.email_type} email.
+    prompt = f"""Generate a professional email.
 
-**Details:**
-- Recipient: {request.recipient}
-- Purpose: {request.purpose}
-- Tone: {request.tone}
+**Email Context:**
+- Purpose: {request.email_purpose}
+- Recipient Type: {request.recipient_type}
+- Tone Style: {request.tone_style}
+- Urgency Level: {request.urgency_level}
 
-**Key Points:**
+**Key Points to Cover:**
 {key_points_text}
 
 **Call to Action:**
-{request.call_to_action or 'None specified'}
+{request.call_to_action or 'None specified - use appropriate closing'}
 
-**Context:**
-{request.context or 'N/A'}
+**Signature Details:**
+{request.signature_details or 'Use standard professional signature'}
+
+**Subject Line Preference:**
+{request.subject_line_preference or 'Create an effective subject line'}
+
+**Additional Context:**
+{request.context or 'None provided'}
 
 **Instructions:**
-1. Create an attention-grabbing subject line
-2. Write a professional email body matching the {request.tone} tone
-3. Include all key points naturally
-4. End with appropriate closure
-5. Avoid spam triggers
-6. Keep it concise and actionable
+1. Create an attention-grabbing subject line that matches the {request.urgency_level} urgency level
+2. Write a {request.tone_style} email body appropriate for {request.recipient_type}
+3. Incorporate all key points naturally and cohesively
+4. Match the {request.urgency_level} urgency level in language and structure
+5. Include the specified call to action if provided
+6. End with appropriate closure for {request.recipient_type}
+7. Avoid spam triggers and excessive punctuation
+8. Keep it concise, clear, and actionable
+9. Ensure the email serves its purpose: {request.email_purpose}
 
 Output format:
 SUBJECT: [subject line]
@@ -81,7 +91,7 @@ SUBJECT: [subject line]
 BODY:
 [email body]
 
-Do not include signature."""
+Do not include signature block."""
 
     # Generate with AI
     if ai_service.service_type == "claude":
@@ -99,19 +109,28 @@ Do not include signature."""
 def _generate_demo_email(request: EmailRequest) -> tuple:
     """Generate demo email without AI"""
     
-    key_points = "\n\n".join(request.key_points) if request.key_points else "We have exciting opportunities to discuss."
+    key_points = "\n\n".join(request.key_points)
     cta = request.call_to_action or "Let's schedule a time to discuss further."
     
-    templates = {
-        "professional": (
-            f"Re: {request.purpose}",
-            f"""Dear {request.recipient},
+    # Create subject based on purpose and urgency
+    urgency_prefix = {
+        "Urgent": "🔴 URGENT: ",
+        "High": "⚡ ",
+        "Normal": "",
+        "Low": ""
+    }.get(request.urgency_level, "")
+    
+    subject = f"{urgency_prefix}{request.subject_line_preference or request.email_purpose}"
+    
+    body = f"""Dear {request.recipient_type},
 
 I hope this message finds you well.
 
-{request.purpose}
+{request.email_purpose}
 
 {key_points}
+
+{request.context or ''}
 
 {cta}
 
@@ -119,74 +138,8 @@ Thank you for your time and consideration.
 
 ---
 NOTE: This is a DEMO email. For AI-personalized emails, add your API key to backend/.env"""
-        ),
-        
-        "marketing": (
-            f"🎯 {request.purpose}",
-            f"""Hi {request.recipient},
-
-We're excited to share something special with you!
-
-{key_points}
-
-{cta}
-
-We look forward to serving you!
-
----
-NOTE: This is a DEMO email. For AI-optimized marketing emails, add your API key to backend/.env"""
-        ),
-        
-        "follow_up": (
-            f"Following up: {request.purpose}",
-            f"""Hi {request.recipient},
-
-I wanted to follow up on our previous conversation regarding {request.purpose}.
-
-{key_points}
-
-{cta}
-
-Looking forward to hearing from you.
-
----
-NOTE: This is a DEMO email. For AI-crafted follow-ups, add your API key to backend/.env"""
-        ),
-        
-        "cold_outreach": (
-            f"Quick question about {request.purpose}",
-            f"""Hi {request.recipient},
-
-I came across your profile and was impressed by your work.
-
-{key_points}
-
-{cta}
-
-Thanks for your time!
-
----
-NOTE: This is a DEMO email. For AI-personalized outreach, add your API key to backend/.env"""
-        ),
-        
-        "thank_you": (
-            f"Thank you - {request.purpose}",
-            f"""Dear {request.recipient},
-
-Thank you so much for {request.purpose}.
-
-{key_points}
-
-I truly appreciate your support.
-
-Warmly,
-
----
-NOTE: This is a DEMO email. For AI-heartfelt messages, add your API key to backend/.env"""
-        ),
-    }
     
-    return templates.get(request.email_type, templates["professional"])
+    return subject, body
 
 
 def _parse_email_response(content: str) -> tuple:
@@ -214,8 +167,11 @@ def _parse_email_response(content: str) -> tuple:
     return subject, body
 
 
-def _generate_signature() -> str:
+def _generate_signature(request: EmailRequest = None) -> str:
     """Generate email signature"""
+    if request and request.signature_details:
+        return request.signature_details
+    
     return """Best regards,
 [Your Name]
 [Your Title]
@@ -232,11 +188,14 @@ def _generate_suggestions(request: EmailRequest, spam_score: float) -> list:
     elif spam_score > 30:
         suggestions.append("Moderate spam risk. Consider toning down urgency or sales language")
     
-    if request.email_type == "marketing" and not request.call_to_action:
-        suggestions.append("Marketing emails should include a clear call-to-action")
+    if request.urgency_level == "Urgent" and spam_score > 40:
+        suggestions.append("Urgent emails may trigger spam filters. Ensure content justifies urgency")
     
-    if request.tone == "formal" and request.email_type == "marketing":
-        suggestions.append("Consider a more engaging tone for marketing emails")
+    if not request.call_to_action:
+        suggestions.append("Consider adding a clear call-to-action to improve response rates")
+    
+    if request.tone_style == "Formal" and request.urgency_level == "Urgent":
+        suggestions.append("Formal tone with urgent priority may seem contradictory. Review tone choice")
     
     if not suggestions:
         suggestions.append("Email looks professional and ready to send!")

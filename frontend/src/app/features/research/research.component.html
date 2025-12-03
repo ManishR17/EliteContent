@@ -7,42 +7,96 @@
     <div class="content-grid">
         <!-- Input Panel -->
         <div class="input-panel">
+            <!-- REQUIRED FIELDS -->
             <div class="form-section">
                 <h3><span class="step-number">1</span> Research Topic</h3>
                 <div class="form-group">
-                    <label>Research Query</label>
-                    <textarea [(ngModel)]="query" rows="3" class="form-textarea"
+                    <label class="form-label">Research Topic *</label>
+                    <textarea [(ngModel)]="topic" rows="3" class="form-textarea"
                         placeholder="What do you want to research? e.g., Impact of AI on healthcare in 2025"></textarea>
                 </div>
-            </div>
-
-            <div class="form-section">
-                <h3><span class="step-number">2</span> Scope & Depth</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Depth</label>
-                        <select [(ngModel)]="depth" class="form-select">
-                            <option *ngFor="let d of depths" [value]="d.value">{{ d.label }}</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Focus Area</label>
-                        <input type="text" [(ngModel)]="focusArea" placeholder="e.g., Financial implications"
-                            class="form-input">
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Specific Research Question *</label>
+                    <input type="text" [(ngModel)]="researchQuestion"
+                        placeholder="e.g., How will AI affect doctor-patient relationships?" class="form-input">
                 </div>
             </div>
 
+            <!-- OPTIONAL FIELDS -->
             <div class="form-section">
-                <h3><span class="step-number">3</span> Options</h3>
-                <div class="checkbox-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" [(ngModel)]="includeCitations"> Include Citations
-                    </label>
-                </div>
+                <details>
+                    <summary>Scope & Depth</summary>
+
+                    <div class="grid-2col mt-4">
+                        <div class="form-group">
+                            <label class="form-label">Depth</label>
+                            <select [(ngModel)]="depth" class="form-select">
+                                <option *ngFor="let d of depths" [value]="d.value">{{ d.label }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Academic Level</label>
+                            <select [(ngModel)]="academicLevel" class="form-select">
+                                <option *ngFor="let level of academicLevels" [value]="level">{{ level }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid-2col">
+                        <div class="form-group">
+                            <label class="form-label">Citation Style</label>
+                            <select [(ngModel)]="citationStyle" class="form-select">
+                                <option *ngFor="let style of citationStyles" [value]="style">{{ style }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Sources Count</label>
+                            <input type="number" [(ngModel)]="sourcesCount" min="1" max="20" class="form-input">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Word Count (Approx)</label>
+                        <input type="number" [(ngModel)]="wordCount" step="100" min="100" class="form-input">
+                    </div>
+                </details>
             </div>
 
-            <button (click)="generateResearch()" [disabled]="!query || isLoading" class="generate-btn">
+            <div class="form-section">
+                <details>
+                    <summary>Focus & Sources</summary>
+
+                    <div class="form-group mt-4">
+                        <label class="form-label">Focus Areas (One per line or comma-separated)</label>
+                        <textarea [(ngModel)]="focusAreasInput" rows="3" class="form-textarea" placeholder="Financial implications
+Social impact
+Technological challenges"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Specific Sections Needed (One per line or comma-separated)</label>
+                        <textarea [(ngModel)]="sectionsNeededInput" rows="3" class="form-textarea" placeholder="Introduction
+Methodology
+Results and Discussion"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Sources Provided (URLs - One per line or comma-separated)</label>
+                        <textarea [(ngModel)]="sourcesProvidedInput" rows="3" class="form-textarea" placeholder="https://example.com/article1
+https://example.com/article2"></textarea>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" [(ngModel)]="includeCitations"> Include Citations
+                        </label>
+                    </div>
+                </details>
+            </div>
+
+            <button (click)="generateResearch()" [disabled]="!topic || isLoading" class="generate-btn">
                 <span *ngIf="!isLoading">🚀 Start Research</span>
                 <span *ngIf="isLoading" class="loading-spinner">⏳ Researching...</span>
             </button>

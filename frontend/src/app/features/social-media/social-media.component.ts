@@ -11,15 +11,20 @@ import { ApiService } from '../../core/services/api.service';
     styleUrls: ['./social-media.component.css']
 })
 export class SocialMediaComponent {
+    // Required Fields
     platform: string = 'linkedin';
-    contentType: string = 'post';
     topic: string = '';
+    keyMessage: string = '';
+
+    // Optional Fields
+    contentType: string = 'post';
+    tone: string = 'Professional';
+    length: string = 'Medium';
     targetAudience: string = '';
-    keyPoints: string = '';
-    tone: string = 'professional';
     includeHashtags: boolean = true;
-    includeEmojis: boolean = true;
-    targetLength: string = 'medium';
+    includeEmoji: boolean = true;
+    callToAction: string = '';
+
     isLoading: boolean = false;
     result: any = null;
     error: string = '';
@@ -43,13 +48,15 @@ export class SocialMediaComponent {
     ];
 
     tones = [
-        { value: 'professional', label: 'Professional' },
-        { value: 'casual', label: 'Casual' },
-        { value: 'friendly', label: 'Friendly' },
-        { value: 'inspirational', label: 'Inspirational' },
-        { value: 'humorous', label: 'Humorous' },
-        { value: 'authoritative', label: 'Authoritative' }
+        { value: 'Professional', label: 'Professional' },
+        { value: 'Casual', label: 'Casual' },
+        { value: 'Friendly', label: 'Friendly' },
+        { value: 'Inspirational', label: 'Inspirational' },
+        { value: 'Humorous', label: 'Humorous' },
+        { value: 'Authoritative', label: 'Authoritative' }
     ];
+
+    lengths = ['Short', 'Medium', 'Long'];
 
     constructor(private apiService: ApiService) { }
 
@@ -58,8 +65,8 @@ export class SocialMediaComponent {
     }
 
     generateContent() {
-        if (!this.topic.trim()) {
-            this.error = 'Please enter a topic';
+        if (!this.topic.trim() || !this.keyMessage.trim()) {
+            this.error = 'Please enter a topic and key message';
             return;
         }
 
@@ -69,12 +76,15 @@ export class SocialMediaComponent {
 
         const data = {
             platform: this.platform,
-            content_type: this.contentType,
             topic: this.topic,
+            key_message: this.keyMessage,
+            content_type: this.contentType,
             tone: this.tone,
+            length: this.length,
+            target_audience: this.targetAudience || undefined,
             include_hashtags: this.includeHashtags,
-            include_emoji: this.includeEmojis,
-            target_audience: this.targetAudience
+            include_emoji: this.includeEmoji,
+            call_to_action: this.callToAction || undefined
         };
 
         this.apiService.generateSocialMedia(data).subscribe({
@@ -100,11 +110,13 @@ export class SocialMediaComponent {
         this.platform = 'linkedin';
         this.contentType = 'post';
         this.topic = '';
-        this.keyPoints = '';
-        this.tone = 'professional';
+        this.keyMessage = '';
+        this.tone = 'Professional';
+        this.length = 'Medium';
+        this.targetAudience = '';
         this.includeHashtags = true;
-        this.includeEmojis = true;
-        this.targetLength = 'medium';
+        this.includeEmoji = true;
+        this.callToAction = '';
         this.result = null;
         this.error = '';
     }
