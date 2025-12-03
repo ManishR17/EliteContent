@@ -1,11 +1,13 @@
-# AI ATS Resume Writer - Quick Setup Guide
+# EliteContent - Setup Guide
 
 ## Prerequisites
-- Python 3.8+
-- Node.js 16+
-- API key from Anthropic (Claude) or OpenAI
+- Python 3.9+
+- Node.js 18+
+- API key from Anthropic (Claude)
 
-## Installation Steps
+## Quick Start (Single Port Deployment)
+
+The application is configured to run both frontend and backend on a single port (8000).
 
 ### 1. Backend Setup
 
@@ -13,94 +15,72 @@
 # Navigate to backend directory
 cd backend
 
-# Install Python dependencies
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
 
 # Create .env file
 cp .env.example .env
 
-# Edit .env and add your API key
-# For Claude:
+# Configure .env with your API key
 # AI_SERVICE=claude
-# ANTHROPIC_API_KEY=sk-ant-your-key-here
-#
-# For OpenAI:
-# AI_SERVICE=openai
-# OPENAI_API_KEY=sk-your-key-here
+# ANTHROPIC_API_KEY=sk-ant-your-key
+# CLAUDE_MODEL=claude-3-haiku-20240307
 ```
 
-### 2. Frontend Setup
+### 2. Frontend Build
 
 ```bash
 # Navigate to frontend directory
 cd frontend
 
-# Install dependencies (if not already done)
+# Install dependencies
 npm install
+
+# Build the Angular application
+npm run build
 ```
 
 ### 3. Run the Application
 
-**Terminal 1 - Backend:**
-```bash
-cd backend
-uvicorn main:app --reload --port 8000
-```
+You only need to run the backend server. It will serve the built frontend automatically.
 
-**Terminal 2 - Frontend:**
 ```bash
-cd frontend
-npm run dev
+# From backend directory
+./venv/bin/uvicorn main:app --reload --port 8000
 ```
 
 ### 4. Access the Application
 
-Open your browser and go to: `http://localhost:55909`
-
-Navigate to the Resume feature and start generating ATS-optimized resumes!
-
-## Getting API Keys
-
-### Claude (Anthropic)
-1. Go to https://console.anthropic.com/
-2. Sign up or log in
-3. Navigate to API Keys
-4. Create a new key
-5. Copy and paste into `.env`
-
-### OpenAI
-1. Go to https://platform.openai.com/
-2. Sign up or log in
-3. Navigate to API Keys
-4. Create a new key
-5. Copy and paste into `.env`
+Open your browser and go to: **http://localhost:8000**
 
 ## Configuration
 
-The AI service can be configured in `.env`:
+The AI service is configured in `backend/.env`.
 
+**Important:** For this API key tier, use the Haiku model:
 ```bash
-AI_SERVICE=claude  # or openai
+AI_SERVICE=claude
+CLAUDE_MODEL=claude-3-haiku-20240307
 MAX_TOKENS=4000
 TEMPERATURE=0.7
 ```
 
 ## Troubleshooting
 
-**Backend won't start:**
-- Ensure all dependencies are installed: `pip install -r requirements.txt`
-- Check Python version: `python --version`
+**AI Errors (404/500):**
+- Ensure `CLAUDE_MODEL` is set to `claude-3-haiku-20240307` in `.env`.
+- Verify your API key in `.env`.
+- Restart the server after changing `.env`.
 
-**AI errors:**
-- Verify API key is set in `.env`
-- Check API service setting matches your key type
-- Ensure API account has credits
+**Frontend not loading:**
+- Ensure you ran `npm run build` in the frontend directory.
+- Check if `backend/frontend/dist/elitecontent-ui/browser` exists.
+- Check browser console for errors.
 
-**File upload fails:**
-- Verify `python-multipart` is installed
-- Check file is PDF or DOCX format
-- File size should be under 10MB
-
-## Support
-
-For issues or questions, check the full walkthrough.md document.
+**Server won't start:**
+- Check if port 8000 is in use: `lsof -ti:8000 | xargs kill -9`
+- Verify Python dependencies: `pip install -r requirements.txt`
