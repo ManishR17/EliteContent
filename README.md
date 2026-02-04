@@ -12,6 +12,8 @@ This approach allows the system to produce consistent and predictable results, e
 
 ![EliteContent Architecture](assets/Endtoend.png)
 
+Some architecture and flow diagrams were generated using Gemini and refined to accurately represent the EliteContent system design.
+
 ## End to End Flow
 
 ![EliteContent Architecture](assets/Elite_Arcitecture.png)
@@ -66,16 +68,20 @@ At this stage, EliteContent does not yet compute formal quantitative metrics suc
 The system is intentionally structured to support future evaluation once the application reaches functional maturity. Planned metrics include retrieval relevance and coverage for RAG, grounding and citation alignment for research outputs, instruction-adherence and structural completeness for generated content, and system-level performance metrics such as latency and cache efficiency. By deferring quantitative evaluation until workflows and data sources stabilize, EliteContent aligns with real-world GenAI development practices, where qualitative validation and architectural robustness precede formal benchmarking.
 
 ## Backend
+
+```bash
 cd backend
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
-
+```
 ## Frontend
+
+```bash
 cd frontend
 npm install
 npm start
-
+```
 
 
