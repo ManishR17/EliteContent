@@ -10,86 +10,11 @@ This approach allows the system to produce consistent and predictable results, e
 
 ## Architecture
 
--   
-┌──────────────────────────────┐
-│          Frontend            │
-│        Angular 21 UI          │
-│  (Forms, Auth, Dashboard)    │
-└───────────────┬──────────────┘
-                │ Structured Requests
-                ▼
-┌──────────────────────────────┐
-│          Backend API          │
-│          FastAPI              │
-│  Auth · Validation · Routing  │
-└───────────────┬──────────────┘
-                │
-                ▼
-┌──────────────────────────────┐
-│      Orchestration Layer     │
-│  Task Planning & Flow Control│
-└───────────────┬──────────────┘
-                │
-     ┌──────────┴──────────┐
-     │                     │
-     ▼                     ▼
-┌──────────────┐     ┌──────────────┐
-│  Cache       │     │  Generation  │
-│  Service     │     │  Controller  │
-└──────┬───────┘     └──────┬───────┘
-       │ Cache Hit            │
-       ▼                      ▼
-┌──────────────┐     ┌──────────────┐
-│  Persistence │     │ Multi-Agent  │
-│  (SQLite)    │     │ Generation   │
-└──────────────┘     └──────┬───────┘
-                             │
-                             ▼
-                    ┌────────────────┐
-                    │ Explainability │
-                    │ & Metadata     │
-                    └──────┬─────────┘
-                           │
-                           ▼
-                    ┌────────────────┐
-                    │  Final Output  │
-                    └────────────────┘
+![EliteContent Architecture](assets/Endtoend.png)
 
 ## End to End Flow
 
-User Input
-   │
-   ▼
-Frontend (Structured Forms)
-   │
-   ▼
-Backend API (FastAPI)
-   │
-   ▼
-Auth & Validation
-   │
-   ▼
-Planner Agent
-   │
-   ├── Resume / Email / Creative
-   │        ▼
-   │   Multi-Agent Generation
-   │
-   └── Research / Documents
-            ▼
-        Universal RAG
-            ▼
-   (Optional) MCP External Access
-            ▼
-     Multi-Agent Generation
-            ▼
-Explainability & Metadata
-            ▼
-Cache Check / Store
-            ▼
-Persistence (DB + Vectors)
-            ▼
-Final Output to UI
+![EliteContent Architecture](assets/Elite_Arcitecture.png)
 
 
 ## Concepts and Design Decisions
@@ -103,17 +28,7 @@ RAG is used selectively, only where factual grounding and citations are required
 
 #### RAG Architecture
 
-┌──────────────────────────────┐
-│      Universal RAG Service   │
-│  (Shared Across Workflows)   │
-└───────────────┬──────────────┘
-                │ Semantic Query
-                ▼
-┌──────────────────────────────┐
-│        Vector Store           │
-│        ChromaDB               │
-│  PersistentClient + Embeddings│
-└──────────────────────────────┘
+![EliteContent Architecture](assets/RAG.png)
 
 
 ## Model Context Protocol (MCP)
